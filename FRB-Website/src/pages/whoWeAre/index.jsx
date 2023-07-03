@@ -300,7 +300,7 @@ export const WhoWeAre = () => {
                 de vida, motivação e produtividade.
               </p>
             </li>
-            <li>
+            {/* <li>
               <img src={apart} alt="Gestão de Afastados" />
               <h3>Gestão de Afastados</h3>
               <p>
@@ -308,7 +308,7 @@ export const WhoWeAre = () => {
                 assertividade para eliminar possíveis inconsistências e conter
                 custos.
               </p>
-            </li>
+            </li> */}
             <li>
               <img src={BI} alt="Graficos" />
               <h3>BI</h3>

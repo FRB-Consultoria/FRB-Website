@@ -6,9 +6,9 @@ import { UserProvider } from "./contexts/userContext/userContext";
 import "react-toastify/dist/ReactToastify.css";
 import { Animations } from "./styles/animations";
 function App() {
-  if(!window.location.href.includes("https")){
-    window.location.href = "https://frbconsultoria.com.br"
-  }
+  // if(!window.location.href.includes("https")){
+  //   window.location.href = "https://frbconsultoria.com.br"
+  // }
   return (
     <>
       <ToastContainer
