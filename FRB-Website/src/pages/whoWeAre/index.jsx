@@ -42,12 +42,7 @@ export const WhoWeAre = () => {
       <Header />
       <Main>
         <SlideShow />
-        <section>
-          <ObservedItem
-            onVisible={() => {
-              whyFRB.current.className = "whyFRB slideLeft";
-            }}
-          >
+        <section className="firstSection">
             <div ref={whyFRB} className="none">
               <h3>Por que a FRB?</h3>
               <div>
@@ -65,9 +60,15 @@ export const WhoWeAre = () => {
                   experiente e dedicada.
                 </p>
               </div>
+              
             </div>
-          </ObservedItem>
         </section>
+          <ObservedItem
+            onVisible={() => {
+              whyFRB.current.className = "whyFRB slideRight";
+            }}
+          >
+          </ObservedItem>
         <div className="fatherImg">
           <ObservedItem
             onVisible={() => {
