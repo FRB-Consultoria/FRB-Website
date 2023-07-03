@@ -14,13 +14,15 @@ export const Main = styled.main`
     font-size: 14px;
   }
 
-  section {
+  .firstSection {
     display: flex;
     flex-direction: column;
     gap: 32px;
     width: 100%;
+    min-height: 300px;
     height: 100%;
   }
+
   .observer {
     width: 100%;
     height: 100%;
@@ -144,30 +146,32 @@ export const Main = styled.main`
     flex-direction: column;
     gap: 40px;
     width: 100%;
-    background-color:var(--color-primary-1);
+    background-color: var(--color-primary-1);
     padding: 20px;
-    h4{
-      
-      color:var(--color-white-1)
+    h4 {
+      color: var(--color-white-1);
     }
-    p{
+    p {
       font-family: "Nunito", sans-serif;
       font-size: 16px;
-      font-weight:400;
-      
-      color:var(--color-white-1)
+      font-weight: 400;
+
+      color: var(--color-white-1);
     }
   }
-  h4{
-      font-family: "Nunito", sans-serif;
-      font-size: 36px;
-      font-weight: 700;
-      color: var(--color-primary-1);
-      width: 100%;
-      text-align: center;
-      border-top: 1px solid var(--color-primary-1);
-    }
+  h4 {
+    font-family: "Nunito", sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--color-primary-1);
+    width: 100%;
+    text-align: center;
+    border-top: 1px solid var(--color-primary-1);
+  }
+
   .positionCard {
+    height: 100%;
+    min-height: 400px;
     img {
       width: 100%;
       height: 250px;
@@ -193,12 +197,13 @@ export const Main = styled.main`
       font-weight: 300;
     }
   }
-.values{
-  background-color:var(--color-primary-1);
-  color:var(--color-white-1);
- 
-  margin-top:20px;
-}
+  .values {
+    background-color: var(--color-primary-1);
+    color: var(--color-white-1);
+
+    margin-top: 20px;
+  }
+  
   @media (min-width: 768px) {
     .invert {
       display: flex;
@@ -266,18 +271,16 @@ export const Main = styled.main`
     .positionH4P {
       display: flex;
       flex-direction: row;
-      
-      p{
-        font-size:19px;
+
+      p {
+        font-size: 19px;
         padding: 30px;
         text-align: center;
-        
       }
-      .separete{
-        border-right:1px solid var(--color-white-1);
-        
+      .separete {
+        border-right: 1px solid var(--color-white-1);
       }
-      .width{
+      .width {
         width: 100%;
       }
     }

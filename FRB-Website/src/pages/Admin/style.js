@@ -2,7 +2,7 @@ import styled from "styled-components";
 export const Main = styled.main`
   background-image: url("src/assets/img/BackgroundDashboard.webp");
   background-size: cover;
-  background-position:center;
+  background-position: center;
   background-color: var(--color-primary-1);
   display: flex;
   flex-direction: column;
@@ -10,15 +10,15 @@ export const Main = styled.main`
   height: max-content;
   min-height: 100vh;
   width: 100%;
-  
-  .container{
+
+  .container {
     width: 100%;
     max-width: 1440px;
   }
-  .imgLogo{
+  .imgLogo {
     width: 160px;
     height: 90;
-}
+  }
   .positionHeader {
     padding: 30px;
     width: 100%;
@@ -28,7 +28,7 @@ export const Main = styled.main`
   .iconBack {
     width: 39px;
     height: 36px;
-      cursor: pointer;
+    cursor: pointer;
   }
   .iconLup {
     height: 15px;
@@ -65,12 +65,11 @@ export const Main = styled.main`
     display: flex;
     gap: 16px;
     align-items: center;
-    img{
+    img {
       cursor: pointer;
     }
-    
   }
-  
+
   .positionInput {
     position: relative;
     input {
@@ -81,7 +80,7 @@ export const Main = styled.main`
       background-color: transparent;
       border-bottom: 1px solid var(--color-grey-0);
       color: var(--color-white-1);
-      ::placeholder{
+      ::placeholder {
         color: var(--color-white-1);
       }
     }
@@ -90,8 +89,7 @@ export const Main = styled.main`
       position: absolute;
       right: 20px;
       top: 20%;
-      color:var(--color-white-1);
-      
+      color: var(--color-white-1);
     }
   }
   section {
@@ -110,11 +108,9 @@ export const Main = styled.main`
       align-items: center;
       justify-content: center;
       margin-bottom: 5px;
-     
     }
-  
 
-    svg{
+    svg {
       color: var(--color-white-1);
       font-size: 18px;
       cursor: pointer;
@@ -122,8 +118,8 @@ export const Main = styled.main`
   }
   .positionBussines {
     display: flex;
-   
-    justify-content: space-between; 
+
+    justify-content: space-between;
     width: 589px;
     padding: 10px 32px;
   }
@@ -142,19 +138,18 @@ export const Main = styled.main`
     width: 100%;
   }
   @media (min-width: 768px) {
-   
     .positionBussines {
       display: flex;
       width: 100%;
       justify-content: space-between;
       gap: 20px;
     }
-    section{
-    overflow-x:auto;
-    padding: 20px;
-    
-}
-.positionInput {
+    section {
+      overflow-x: auto;
+      padding: 20px;
+    }
+  }
+  .positionInput {
     width: 100%;
     display: flex;
     justify-content: flex-end;
@@ -174,9 +169,8 @@ export const Main = styled.main`
       align-items: center;
       justify-content: center;
       margin-bottom: 5px;
-      text-overflow:ellipsis;
+      text-overflow: ellipsis;
       white-space: nowrap;
     }
-  
   }
-`
+`;

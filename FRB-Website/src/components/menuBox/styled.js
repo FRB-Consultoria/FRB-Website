@@ -5,7 +5,6 @@ export const MenuStyle = styled.div`
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    
     position: absolute;
     top: 0;
     right: 0;

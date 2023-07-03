@@ -14,7 +14,7 @@ export const MenuBox = () => {
         }}
       />
       {openMenu ? (
-        <MenuStyle>
+        <MenuStyle className="slideDown">
           
           <p
             className="close"
