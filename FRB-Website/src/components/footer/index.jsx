@@ -32,9 +32,19 @@ export const Footer = () => {
   return (
     <FooterStyle>
       <div className="footerBox">
-        <div>
+        <div className="gapPolitic">
+          <div>
           <h3>Email para contato</h3>
-          <p>contatofrb@frbconsultoria.com.br</p>
+          <p>contatofrb@frbconsultoria.com.br</p></div>
+          <div>
+          <Link className="linkpolitic"
+            onClick={() => {
+              window.scrollTo(0, 0);
+            }}
+            to={"/politicadeprivacidade"}
+          >
+            <h3>Termos de uso e Política de Privacidade</h3> 
+          </Link></div>
           {/* <h3>Telefone para contato</h3>
           <p>(xx)xxxxx-xxxx</p> */}
         </div>

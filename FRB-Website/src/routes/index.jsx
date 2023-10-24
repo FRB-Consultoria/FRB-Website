@@ -8,6 +8,7 @@ import { CustomerArea } from "../pages/CustomerArea";
 import { Admin } from "../pages/Admin";
 import { User } from "../pages/Users";
 import { Thanks } from "../pages/thanks";
+import { PrivacyPolicy } from "../pages/PrivacyPolicy";
 import { ProtectRoutes } from "../components/ProtectRoutes";
 import { MyAdminProvider } from "../Providers/adminProvider";
 import { ResetPassword } from "../pages/ResetPassword";
@@ -21,6 +22,8 @@ export const MainRoutes = () => {
       <Route path="contato" element={<Contact />} />
       <Route path="contato/obrigadopelocontato" element={<Thanks />} />
       <Route path="areadocliente" element={<CustomerArea />} />
+      <Route path="politicadeprivacidade" element={<PrivacyPolicy/>} />
+      
       <Route path="redefinirsenha/:id" element={<ResetPassword />} />
       <Route element={<ProtectRoutes />}>
         <Route path="user" element={<User />} />
