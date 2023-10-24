@@ -71,7 +71,7 @@ export const Main = styled.main`
   .fatherImg {
     width: 100%;
     height: 160px;
-    background-color: var(--color-primary-3);
+    background-color: lightblue;
     margin-top: 64px;
     position: relative;
 
@@ -97,6 +97,7 @@ export const Main = styled.main`
       bottom: 90px;
       right: 0px;
       z-index: 2;
+      font-family: "Nunito", sans-serif;
     }
   }
 
@@ -263,7 +264,7 @@ export const Main = styled.main`
           z-index: 1;
         }
         p {
-          font-size: 28px;
+          font-size: 25px;
           bottom: 180px;
         }
       }

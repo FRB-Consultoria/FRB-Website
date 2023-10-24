@@ -1,12 +1,13 @@
 import * as yup from "yup";
 const passwordType = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+const passwordReset = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
 
 export const resetPasswordSchema = yup.object().shape({
   password: yup
     .string()
     .required("Esse campo é obrigatório!")
-    .matches(passwordType, {
-      message: "Deve conter no minimo 6 caractéres ter letra e número",
+    .matches(passwordReset, {
+      message: "Deve conter minimo de 8 caractéres, ter letra, número e ao menos um símbolo",
     }),
   confirmPassword: yup
     .string()
@@ -24,7 +25,7 @@ export const createUserSchema = yup.object().shape({
   email: yup.string().required("E-mail obrigatório").email("Email invalido"),
   user_level: yup.string().required("Nivel de usuário obrigatório"),
   power_bi_link: yup.string().required("Link do power bi obrigatório"),
-  description: yup.string().required("Descrição obrigatória"),
+  description: yup.string(),
 });
 
 export const createClientSchema = yup.object().shape({

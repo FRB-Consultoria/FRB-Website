@@ -12,7 +12,7 @@ height: 100vh;
     height: 90px;
   }
   .positionHeader {
-    padding: 32px;
+    padding: 15px;
     width: 100%;
     max-width: 1440px;
     display: flex;
@@ -45,7 +45,7 @@ height: 100vh;
     display: flex;
     flex-direction: column;
     padding: 32px;
-    gap: 32px;
+    gap: 40px;
     background-color: var(--color-white-2);
     border-radius: var(--radius-2);
 
