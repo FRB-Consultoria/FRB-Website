@@ -1,6 +1,11 @@
 import styled from "styled-components";
 
 export const FooterStyle = styled.footer`
+.gapPolitic{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 
 .imgLogo{
     width: 160px;
