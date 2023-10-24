@@ -1,6 +1,6 @@
 import { Main } from "./style";
 import { Header } from "../../components/header";
-import { Footer } from "../../components/Footer";
+import { Footer } from "../../components/footer";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import { Select } from "../../components/Select";
@@ -20,7 +20,7 @@ export const Contact = () => {
               contato.
             </p>
           </div>
-          <form action="https://formsubmit.co/contato@frbconsultoria.com.br" method="POST">
+          <form action="https://formsubmit.co/contatofrb@frbconsultoria.com.br" method="POST">
             <div>
               <Input
                 name="name"
@@ -52,7 +52,8 @@ export const Contact = () => {
                 <Select required={true} />
               </label>
             </div>
-            <textarea required name="description" placeholder="Sobre o que deseja falar?"  ></textarea>
+            <label>Fale Conosco*
+            <textarea required name="description" placeholder="Sobre o que deseja falar?"  ></textarea></label>
             <div className="buttonBox">
               <Button type="submit" name="Enviar" />
             </div>

@@ -51,13 +51,13 @@ export const EditCompanyModal = ({ client }) => {
               label="CNPJ"
               register={register("cnpj")}
             />
-            <Input
+            {/* <Input
               name="password"
               type="password"
               placeholder="Crie uma nova senha"
               label="Nova Senha"
               register={register("password")}
-            />
+            /> */}
             <Input
               name="tel"
               type="tel"
