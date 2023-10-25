@@ -14,7 +14,7 @@ export const Animations = createGlobalStyle`
 }
 
 .opacity{
-    animation: opacity 2s;
+    animation: opacity 3s;
 }
 
 .opacity-2{
@@ -22,7 +22,7 @@ export const Animations = createGlobalStyle`
 }
 
 .scale{
-    animation: scale 2s;
+    animation: scale 4s;
 }
 
 .spinner{
