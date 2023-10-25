@@ -5,10 +5,11 @@ import {AiFillFilePdf} from "react-icons/ai"
 import {BiLink} from "react-icons/bi"
 
 // import {politic} from "../../assets/pdf/politic.pdf"
-import { Link } from "react-router-dom";
+
 export const PrivacyPolicy = () =>{
     return(<Main>
 <Header className="static" />
+<nav>
 <section>
     <p>Termos de uso e Política de Privacidade</p></section>
     <article>
@@ -20,7 +21,7 @@ export const PrivacyPolicy = () =>{
         
             <a href="https://frbconsultoria.dpo.direct/index.aspx" target="_blank" rel="noopener noreferrer"> <BiLink/> Portal da Privacidade </a>
     </article>
-    
+    </nav>
 </Main>
         )
 

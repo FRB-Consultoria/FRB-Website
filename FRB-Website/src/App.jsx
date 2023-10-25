@@ -4,7 +4,7 @@ import { ToastContainer } from "react-toastify";
 import { UserProvider } from "./contexts/userContext/userContext";
 import "react-toastify/dist/ReactToastify.css";
 import { Animations } from "./styles/animations";
-import { CookieBanner } from "./components/Cookies";
+// import { CookieBanner } from "./components/Cookies";
 function App() {
   //  if(!window.location.href.includes("https")){
   //    window.location.href = "https://frbconsultoria.com.br"
@@ -24,7 +24,7 @@ function App() {
         pauseOnHover
         theme="light"
       />
-    <CookieBanner/>
+    {/* <CookieBanner/> */}
       <GlobalStyle />
       <Animations/>
       <UserProvider>

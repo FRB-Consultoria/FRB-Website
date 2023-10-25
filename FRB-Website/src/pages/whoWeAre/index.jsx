@@ -19,10 +19,16 @@ import acessiblitypic from "../../assets/img/acessiblitypic.webp";
 import technology from "../../assets/img/relacion.webp";
 import zeal from "../../assets/img/excelencia.webp";
 import proactive from "../../assets/img/proactive.webp";
+import valores from "../../assets/img/Valores.webp";
+import visao from "../../assets/img/Missão.webp";
+import missao from "../../assets/img/Visão.webp";
 
 export const WhoWeAre = () => {
   const whyFRB = useRef(false);
   const fatherImg = useRef(false);
+  const boxColor = useRef(false);
+  const boxColor2 = useRef(false);
+  const boxColor3 = useRef(false);
   const text = useRef(false);
   const text1 = useRef(false);
   const text2 = useRef(false);
@@ -43,32 +49,29 @@ export const WhoWeAre = () => {
       <Main>
         <SlideShow />
         <section className="firstSection">
-            <div ref={whyFRB} className="none">
-              <h3>Por que a FRB?</h3>
-              <div>
-                <p>
-                  Nossa reputação sólida e expertise no setor são fundamentais
-                  para construção de relacionamentos.
-                </p>
-                <p>
-                  Ao longo dos anos, estabelecemos um nome de confiança como
-                  provedores de serviços em gestão.
-                </p>
-                <p>
-                  Quando você escolhe nossa empresa, você escolhe a
-                  tranquilidade de saber que será atendido por uma equipe
-                  experiente e dedicada.
-                </p>
-              </div>
-              
+          <div ref={whyFRB} className="none">
+            <h3>Por que a FRB?</h3>
+            <div>
+              <p>
+                Nossa reputação sólida e expertise no setor são fundamentais
+                para construção de relacionamentos.
+              </p>
+              <p>
+                Ao longo dos anos, estabelecemos um nome de confiança como
+                provedores de serviços em gestão.
+              </p>
+              <p>
+                Quando você escolhe nossa empresa, você escolhe a tranquilidade
+                de saber que será atendido por uma equipe experiente e dedicada.
+              </p>
             </div>
+          </div>
         </section>
-          <ObservedItem
-            onVisible={() => {
-              whyFRB.current.className = "whyFRB slideRight";
-            }}
-          >
-          </ObservedItem>
+        <ObservedItem
+          onVisible={() => {
+            whyFRB.current.className = "whyFRB slideRight";
+          }}
+        ></ObservedItem>
         <div className="fatherImg">
           <ObservedItem
             onVisible={() => {
@@ -87,7 +90,50 @@ export const WhoWeAre = () => {
             </p>
           </ObservedItem>
         </div>
-        <div className="positionH4P scale">
+        <section className="visionValue ">
+        
+          <p className="pVision">Missão</p>
+          <ObservedItem
+          onVisible={() => {
+            boxColor.current.className = "boxColor scale";
+          }}
+        ></ObservedItem>
+          <div ref={boxColor} className="boxColor">
+            <img src={visao} alt="" />
+            <p>
+              Nossa missão é ser a consultoria de confiança, estabelecendo
+              relacionamento sólido e transparente, interligando e facilitando a
+              relação entre empresas, seguradoras e operadoras de saúde.
+              
+            </p>
+          </div>
+
+          <p className="pVision">Visão</p>
+          <ObservedItem
+          onVisible={() => {
+            boxColor2.current.className = "boxColor scale";
+          }}
+        ></ObservedItem>
+          <div ref={boxColor2} className="boxColor">
+            <img src={missao} alt="" />
+            <p>
+              Ser reconhecidos como a referência no segmento de seguros,
+              destacando-nos pela confiabilidade, relacionamentos duradouros,
+              primando pela proximidade e agilidade no atendimento.
+            </p>
+          </div>
+          <ObservedItem
+          onVisible={() => {
+            boxColor3.current.className = "scale";
+          }}
+        ></ObservedItem>
+          <span ref={boxColor3}>
+          <p className="pVision">Valores</p>
+            <img src={valores} alt="" /></span>
+            
+          
+        </section>
+        {/* <div className="positionH4P scale">
           <div className="separete width">
         <h4>Missão</h4>
         <p >
@@ -105,7 +151,8 @@ export const WhoWeAre = () => {
           destacando-nos pela confiabilidade, relacionamentos duradouros,
           primando pela proximidade e agilidade no atendimento.
         </p></div></div>
-        <h4 className="values">Valores</h4>
+        <h4 className="values">Valores</h4> */}
+
         <div className="positionCard ">
           <ObservedItem
             onVisible={() => {

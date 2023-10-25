@@ -46,7 +46,55 @@ export const Main = styled.main`
       object-fit: cover;
     }
   }
+.visionValue{
+  background-color:#c7d7f9;
+  padding:20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  .boxColor{
+    background-color:#add8e6;
+    border-radius:100px;
+  padding:20px 20px 20px 0px;
 
+  }
+  .pVision{
+    font-family: "Nunito", sans-serif;
+    font-weight:bold;
+    font-size:26px;
+    text-align: center;
+    margin: 0 auto;
+    
+  }
+    
+  div{
+    display: flex;
+    align-items: center;
+justify-content: space-between;
+p{
+  width: 70%;
+  font-family: "Nunito", sans-serif;
+  
+  
+}
+    img{
+      width: 25%;
+      background-color:#ffffff;
+      border-radius:50%;
+      padding: 5px;
+    }
+  }
+  span{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin: 0 auto;
+    img{
+      width: 70px;
+      height: 70px;
+    }
+  }
+}
   .whyFRB {
     display: flex;
     flex-direction: column;
@@ -172,7 +220,7 @@ export const Main = styled.main`
 
   .positionCard {
     height: 100%;
-    min-height: 400px;
+    min-height: 350px;
     img {
       width: 100%;
       height: 250px;
@@ -292,6 +340,31 @@ export const Main = styled.main`
         max-width: 30%;
       }
     }
+    .visionValue{
+      max-width: 100%;
+      .pVision{
+        font-size:36px;
+      }
+      .boxColor{
+        padding-left:20px;
+        
+        img{
+        width: 15%;
+        padding: 20px;
+      }
+      p{
+        font-size:24px;
+        margin-right:10%;
+      }
+      }
+      span{
+        img{
+          width: 120px;
+          height: 120px;
+        }
+      }
+    }
+    
     .positionCard {
       display: flex;
       width: 100%;
@@ -325,5 +398,6 @@ export const Main = styled.main`
 width: 50%;
       }
     } */
+    
   }
 `;

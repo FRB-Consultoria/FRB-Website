@@ -1,5 +1,13 @@
 import styled from "styled-components";
 export const Main = styled.main`
+nav{
+  display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-top:100px;
+}
 height: 100vh;
 width: 100vw;
 background-color: var(--color-primary-1);
