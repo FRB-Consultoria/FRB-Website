@@ -1,3 +1,4 @@
+import React, { useContext, useEffect, useState } from "react";
 import { Main } from "./style";
 import { AiOutlineSearch } from "react-icons/ai";
 import { CreateCompanyModal } from "../../components/Modals/createCompany";
@@ -8,9 +9,10 @@ import FRB from "../../assets/img/logoBranca.webp";
 import buttonPlus from "../../assets/img/Button Plus.webp";
 import { FiEdit } from "react-icons/fi";
 import { TbTrash } from "react-icons/tb";
-import { useContext, useEffect } from "react";
 import { UserContext } from "../../contexts/userContext/userContext";
 import { AdminContext } from "../../contexts/adminContext/adminContext";
+import { isFirstDayOfMonth, startOfToday } from "date-fns";
+import { Spinner } from "../../components/Spinner/Spinner";
 
 export const Admin = () => {
   const columnNames = [
@@ -18,19 +20,49 @@ export const Admin = () => {
     "Usuários",
     "CNPJ",
     "Telefone",
-    "Email",
-    "",
+   
+  
     "Editar / Remover",
   ];
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const { CompanyModal, setCompanyModal, ClientModal, user, navigate } =
     useContext(UserContext);
-  const { target, setUsers, filter, filterClientOn, filterClient } =
+  const { target, setUsers, filter, filterClientOn, filterClient, createEmail } =
     useContext(AdminContext);
 
+  // Função para enviar lembrete de fatura
+  const handleSendReminder = async () => {
+    setIsLoading(true); // Mostra o spinner
+    await createEmail("sendEmailButton");
+    setIsLoading(false); // Esconde o spinner
+  };
+
   useEffect(() => {
-    user.user_level !== "admin" ? navigate("/") : null;
-  }, []);
+    if (user.user_level !== "admin") navigate("/");
+
+    const checkAndSendReminder = () => {
+      if (isFirstDayOfMonth(startOfToday())) {
+        handleSendReminder();
+      }
+    };
+
+    // Verifica diariamente
+    const intervalId = setInterval(checkAndSendReminder, 24 * 60 * 60 * 1000);
+
+    // Limpa o intervalo quando o componente é desmontado
+    return () => clearInterval(intervalId);
+  }, [user, navigate, createEmail, handleSendReminder]);
+
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [filterClient]);
 
   return (
     <Main>
@@ -40,9 +72,7 @@ export const Admin = () => {
             <img
               className="iconBack"
               src={backLogin}
-              onClick={() => {
-                navigate("/areadocliente");
-              }}
+              onClick={() => navigate("/areadocliente")}
               alt="Menu para voltar a página"
             />
             <img className="imgLogo" src={FRB} alt="Logo da empresa" />
@@ -50,6 +80,9 @@ export const Admin = () => {
         </div>
         <div className="positionNameClient">
           <p className="nameClient">Olá, Flávio de Bem</p>
+          <button className="sendReminderButton" onClick={handleSendReminder}>
+            {isLoading ? <Spinner small /> : "Enviar Lembrete de Fatura"}
+          </button>
         </div>
         <div className="positionIntro">
           <div className="positionLayout">
@@ -60,9 +93,7 @@ export const Admin = () => {
                 <img
                   src={buttonPlus}
                   alt="Botão de Adicionar Empresa"
-                  onClick={() => {
-                    setCompanyModal(<CreateCompanyModal />);
-                  }}
+                  onClick={() => setCompanyModal(<CreateCompanyModal />)}
                 />
               </div>
             </div>
@@ -80,38 +111,33 @@ export const Admin = () => {
         </div>
         <section>
           <div className="positionOption">
-            <div className="positionBussines ">
-              <p>Clientes</p>
-              <p>Usuários</p>
-              <p>CNPJ</p>
-              <p>Telefone</p>
-              <p>Email</p>
-              <p>Editar / Remover</p>
+            <div className="positionBussines">
+              {columnNames.map((name, index) => (
+                <p key={index}>{name}</p>
+              ))}
             </div>
           </div>
-          <ul className="positionOption">
-            {target && filter
-              ? filter.map((client) => (
-                  <li key={client.id} className="positionBussines opacity-2">
-                    <p>{client.client_name}</p>
-                    <p>{client.users.length}</p>
-                    <p>{client.cnpj}</p>
-                    <p>{client.tel}</p>
-                    <p>{client.client_email}</p>
-                    <span>
-                      {
+          {isLoading ? (
+            <Spinner />
+          ) : (
+            <ul className="positionOption">
+              {target && filter
+                ? filter.map((client) => (
+                    <li key={client.id} className="positionBussines opacity-2">
+                      <p>{client.client_name}</p>
+                      <p>{client.users.length}</p>
+                      <p>{client.cnpj}</p>
+                      <p>{client.tel}</p>
+                     
+                      <span>
                         <FiEdit
                           onClick={() => {
-                            setCompanyModal(
-                              <EditCompanyModal client={client} />
-                            );
+                            setCompanyModal(<EditCompanyModal client={client} />);
                             setUsers(client.users);
                           }}
                         />
-                      }
-                    </span>
-                    <span>
-                      {
+                      </span>
+                      <span>
                         <TbTrash
                           onClick={() => {
                             setCompanyModal(
@@ -122,32 +148,26 @@ export const Admin = () => {
                             );
                           }}
                         />
-                      }
-                    </span>
-                  </li>
-                ))
-              : filterClient.map((client) => (
-                  <li key={client.id} className="positionBussines opacity-2">
-                    <p>{client.client_name}</p>
-                    <p>{client.users.length}</p>
-                    <p>{client.cnpj}</p>
-                    <p>{client.tel}</p>
-                    <p>{client.client_email}</p>
-                    <div>
-                      <span>
-                        {
+                      </span>
+                    </li>
+                  ))
+                : filterClient.map((client) => (
+                    <li key={client.id} className="positionBussines opacity-2">
+                      <p>{client.client_name}</p>
+                      <p>{client.users.length}</p>
+                      <p>{client.cnpj}</p>
+                      <p>{client.tel}</p>
+                      
+                      <div>
+                        <span>
                           <FiEdit
                             onClick={() => {
-                              setCompanyModal(
-                                <EditCompanyModal client={client} />
-                              );
+                              setCompanyModal(<EditCompanyModal client={client} />);
                               setUsers(client.users);
                             }}
                           />
-                        }
-                      </span>
-                      <span>
-                        {
+                        </span>
+                        <span>
                           <TbTrash
                             onClick={() => {
                               setCompanyModal(
@@ -158,15 +178,15 @@ export const Admin = () => {
                               );
                             }}
                           />
-                        }
-                      </span>
-                    </div>
-                  </li>
-                ))}
-          </ul>
+                        </span>
+                      </div>
+                    </li>
+                  ))}
+            </ul>
+          )}
         </section>
-        {CompanyModal ? CompanyModal : null}
-        {ClientModal ? ClientModal : null}
+        {CompanyModal && CompanyModal}
+        {ClientModal && ClientModal}
       </div>
     </Main>
   );

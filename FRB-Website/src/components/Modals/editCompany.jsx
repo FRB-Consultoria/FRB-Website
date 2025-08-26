@@ -2,24 +2,25 @@ import { ModalBackground } from "./ModalBackground";
 import { Button } from "../Button";
 import { Input } from "../Input";
 import { EditCompany } from "./editCompanyStyle";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { UserContext } from "../../contexts/userContext/userContext";
 import { CreateClientModal } from "../../components/Modals/createClient";
 import { RemoveClientModal } from "../../components/Modals/removeClient";
 import { EditClientModal } from "../../components/Modals/editClient";
 import { AdminContext } from "../../contexts/adminContext/adminContext";
 import { useForm } from "react-hook-form";
-
+import powerBiLogo from '../../assets/img/powerbi-logo.png'; 
+import {CreateSubModal} from "./createSub"
 export const EditCompanyModal = ({ client }) => {
   const { setClientModal } = useContext(UserContext);
-  const { users, deactivateUser, updateClient} = useContext(AdminContext);
-  
+  const { users, deactivateUser, updateClient } = useContext(AdminContext);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({
-    defaultValues:{
+    defaultValues: {
       client_name: client.client_name,
       cnpj: client.cnpj,
       password: client.password,
@@ -29,14 +30,16 @@ export const EditCompanyModal = ({ client }) => {
       contract_health: client.contract_health,
       contract_life: client.contract_life,
       contract_dental: client.contract_dental,
-    }
+    },
   });
+
+  const rhUser = users?.find(user => user.user_level === 'rh');
 
   return (
     <EditCompany>
       <ModalBackground size="editCompany">
         <div>
-          <form onSubmit={handleSubmit((body)=>{updateClient(body, client.id, "Atualizar")})}>
+          <form onSubmit={handleSubmit((body) => { updateClient(body, client.id, "Atualizar") })}>
             <Input
               name="client_name"
               type="text"
@@ -104,6 +107,20 @@ export const EditCompanyModal = ({ client }) => {
           </form>
           <div className="positionClient">
             <h3>Gerenciamento de Usuário</h3>
+            {rhUser && rhUser.power_bi_link && (
+              <a className="powerbi-button" href={rhUser.power_bi_link} target="_blank" rel="noopener noreferrer">
+                
+                Power BI Link
+              </a>
+            )}
+            
+              <Button
+              type="submit"
+              name="Subfatura"
+              onClick={() => {
+                setClientModal(<CreateSubModal client_id={client.id} />);
+              }}
+            ></Button>
             <Button
               type="submit"
               name="Criar usuário"
@@ -113,35 +130,34 @@ export const EditCompanyModal = ({ client }) => {
             ></Button>
           </div>
           <ul className="clientList">
-            {users ? users.map((user)=>
-            <li key={user.id} className="opacity-2">
-              <span
-                className="close"
-                onClick={() => {
-                  setClientModal(<RemoveClientModal name={user.name} user_id={user.id} client_id={client.id}/>);
-                }}
-              >
-                x
-              </span>
-              <h4>{user.name}</h4>
-              <div>
-                <Button
-                  type="button"
-                  name="Editar"
+            {users ? users.map((user) =>
+              <li key={user.id} className="opacity-2">
+                <span
+                  className="close"
                   onClick={() => {
-                    setClientModal(<EditClientModal user={user} client_id={client.id}/>);
+                    setClientModal(<RemoveClientModal name={user.name} user_id={user.id} client_id={client.id} />);
                   }}
-
-                ></Button>
-                <Button 
-                type="button" 
-                name={user.active ? "Desativar" : "Ativar"}
-                onClick={()=>{deactivateUser(user.id, user.active, client.id)}}
-                className={!user.active ? "active" : "deactive"}>
-                </Button>
-              </div>
-            </li>
-            ):null}
+                >
+                  x
+                </span>
+                <h4>{user.name}</h4>
+                <div>
+                  <Button
+                    type="button"
+                    name="Editar"
+                    onClick={() => {
+                      setClientModal(<EditClientModal user={user} client_id={client.id} />);
+                    }}
+                  ></Button>
+                  <Button
+                    type="button"
+                    name={user.active ? "Desativar" : "Ativar"}
+                    onClick={() => { deactivateUser(user.id, user.active, client.id) }}
+                    className={!user.active ? "active" : "deactive"}>
+                  </Button>
+                </div>
+              </li>
+            ) : null}
           </ul>
         </div>
       </ModalBackground>

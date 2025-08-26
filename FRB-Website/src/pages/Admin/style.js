@@ -1,4 +1,5 @@
 import styled from "styled-components";
+
 export const Main = styled.main`
   background-image: url("src/assets/img/BackgroundDashboard.webp");
   background-size: cover;
@@ -14,6 +15,7 @@ export const Main = styled.main`
   .container {
     width: 100%;
     max-width: 1440px;
+    padding: 0 20px;
   }
   .imgLogo {
     width: 160px;
@@ -48,6 +50,7 @@ export const Main = styled.main`
       inset 0px 4px 4px rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 30px;
   }
   .positionIntro {
@@ -103,7 +106,7 @@ export const Main = styled.main`
     padding: 0 16px;
     p,
     span {
-      width: max-content;
+      width: 100px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -118,9 +121,7 @@ export const Main = styled.main`
   }
   .positionBussines {
     display: flex;
-
     justify-content: space-between;
-    width: 589px;
     padding: 10px 32px;
   }
   .positionEditTrash {
@@ -137,6 +138,7 @@ export const Main = styled.main`
     flex-direction: column;
     width: 100%;
   }
+
   @media (min-width: 768px) {
     .positionBussines {
       display: flex;
@@ -149,6 +151,7 @@ export const Main = styled.main`
       padding: 20px;
     }
   }
+
   .positionInput {
     width: 100%;
     display: flex;
@@ -171,6 +174,72 @@ export const Main = styled.main`
       margin-bottom: 5px;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+  }
+
+  .sendReminderButton {
+    background-color: black;
+    color: var(--color-white-1);
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: var(--color-secondary-dark);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .positionHeader {
+     
+      align-items: center;
+    }
+
+    .positionNameClient {
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      text-align: center;
+      gap: 10px;
+    }
+
+    .positionLayout {
+      flex-direction: column;
+      gap: 20px;
+      
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    .positionInput input {
+      width: 100%;
+      .iconLup {
+      top: 50%;
+      right: 16px;
+      transform: translateY(-50%);
+    }
+    }
+
+    
+
+    .positionOption {
+      align-items: flex-start;
+    }
+    .positionBussines {
+      align-items: flex-start;
+      padding: 10px 0;
+p{
+  width: 150px;
+}
+    }
+    li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
     }
   }
 `;

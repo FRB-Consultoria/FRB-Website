@@ -16,31 +16,44 @@ export const UserProvider = ({ children }) => {
   const [spinner, setSpinner] = useState(false);
   const [userInfo, setUserInfo] = useState("");
   const [observer, setObserver] = useState("");
+  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
   const handleForm = async (body) => {
     try {
-      setSpinner("Entrar")
+      setSpinner("Entrar");
       const response = await api.post("users/login/", body);
       const decodedToken = jwt_decode(response.data.access);
       window.localStorage.clear();
       window.localStorage.setItem(
         "@token",
         JSON.stringify(response.data.access)
-        );
-        setUserInfo(decodedToken);
-        
-        decodedToken.user_level == "admin"
-        ? navigate("/admin")
-        : navigate("/user");
-        
-      setLoading(true)
+      );
+      setUserInfo(decodedToken);
+
+      if (decodedToken.user_level === "invoicinguser") {
+        setShowModal(true);
+      } else {
+        let route;
+
+        if (decodedToken.user_level === "admin") {
+          route = "/admin";
+        } else if (decodedToken.user_level === "invoicingadmin") {
+          route = "/faturamento/admin";
+        } else if (decodedToken.user_level === "rh" || decodedToken.user_level === "medic") {
+          route = "/user";
+        }
+
+        navigate(route);
+      }
+
+      setLoading(true);
       notifySucess("Logado com sucesso!");
     } catch (err) {
       console.log(err);
       notifyError("Email ou senha invalida!");
-    } finally{
-      setSpinner(false)
+    } finally {
+      setSpinner(false);
     }
   };
 
@@ -84,8 +97,10 @@ export const UserProvider = ({ children }) => {
         userInfo,
         observer,
         setObserver,
-        spinner, 
-        setSpinner
+        spinner,
+        setSpinner,
+        showModal,
+        setShowModal,
       }}
     >
       {children}

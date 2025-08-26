@@ -24,14 +24,28 @@ export const ResetPassword = () => {
 
   useEffect(() => {
     const login = async () => {
-      const users = await api.get("users/")
-      const email = users.data.results.find((user)=>user.id==id).email
+      let allUsers = [];
+      let nextPage = "https://frbseguros.com.br/api/users/";
+  
+
+      while (nextPage) {
+        const users = await api.get(nextPage);
+        allUsers = [...allUsers, ...users.data.results];
+        nextPage = users.data.next;
+      }
+  
+    
+      
+  
+      const email = allUsers.find((user) => user.id === id).email;
+      
       const response = await api.post("users/login/", {
         username: email,
         password: email,
       });
       setToken(response.data.access);
     };
+  
     login();
   }, []);
 

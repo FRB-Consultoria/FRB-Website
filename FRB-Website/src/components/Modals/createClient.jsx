@@ -55,6 +55,8 @@ export const CreateClientModal = ({client_id}) => {
                 <option value="">--</option>
                 <option value="medic">Médico</option>
                 <option value="rh">RH</option>
+                <option value="invoicinguser">Faturamento e Power BI</option>
+                
               </select>
               {errors.user_level && <p className="error">{errors.user_level.message}</p>}
             </label>

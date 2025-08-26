@@ -12,6 +12,8 @@ import { PrivacyPolicy } from "../pages/PrivacyPolicy";
 import { ProtectRoutes } from "../components/ProtectRoutes";
 import { MyAdminProvider } from "../Providers/adminProvider";
 import { ResetPassword } from "../pages/ResetPassword";
+import { Invoicinguser } from "../pages/Invoicinguser";
+import { Invoicingadmin } from "../pages/Invoicingadmin";
 
 export const MainRoutes = () => {
   return (
@@ -23,12 +25,14 @@ export const MainRoutes = () => {
       <Route path="contato/obrigadopelocontato" element={<Thanks />} />
       <Route path="areadocliente" element={<CustomerArea />} />
       <Route path="politicadeprivacidade" element={<PrivacyPolicy/>} />
-      
       <Route path="redefinirsenha/:id" element={<ResetPassword />} />
       <Route element={<ProtectRoutes />}>
         <Route path="user" element={<User />} />
         <Route element={<MyAdminProvider/>}>
           <Route path="admin" element={<Admin />} />
+          <Route path="faturamento/admin" element={<Invoicingadmin />} /> 
+          <Route path="faturamento" element={<Invoicinguser />} />
+
         </Route>
       </Route>
       <Route path="*" element={<NotFound />} />

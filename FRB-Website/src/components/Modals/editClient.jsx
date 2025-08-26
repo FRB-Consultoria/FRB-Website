@@ -54,6 +54,8 @@ export const EditClientModal = ({user, client_id}) => {
                 <option value="">--</option>
                 <option value="medic">Médico</option>
                 <option value="rh">RH</option>
+                <option value="invoicinguser">Faturamento e Power BI</option>
+                
               </select>
             </label>
             <label> Descrição do usuário

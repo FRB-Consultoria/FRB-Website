@@ -35,7 +35,7 @@ export const Footer = () => {
         <div className="gapPolitic">
           <div>
           <h3>Email para contato</h3>
-          <p>contatofrb@frbconsultoria.com.br</p></div>
+          <p>no-reply@frbconsultoria.com.br</p></div>
           <div>
           <Link className="linkpolitic"
             onClick={() => {

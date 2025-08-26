@@ -1,13 +1,14 @@
 import styled from "styled-components";
 
 export const Main = styled.main`
+  /* estilos existentes */
   background-color: var(--color-primary-1);
   width: 100%;
   height: 100 max-content;
   display: flex;
   flex-direction: column;
   align-items: center;
-  
+
   .imglogo {
     width: 160px;
   }
@@ -182,5 +183,53 @@ export const Main = styled.main`
   .textLogin {
     font-size: 24px;
   }
- 
 `;
+
+export const ModalContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: var(--color-primary-2);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  h2{
+    font-family: "Nunito", sans-serif;
+    color: white;
+  }
+`;
+
+export const ModalButton = styled.button`
+  background-color: var(--color-primary-1);
+  color: white;
+  padding: 10px 20px;
+  margin: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+  font-family: "Nunito", sans-serif;
+  &:hover {
+    background-color: var(--color-primary-3);
+  }
+`;
+
+export const customStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    width: '80%',
+    maxWidth: '400px',
+    backgroundColor: 'var(--color-white-1)',
+    borderRadius: '10px',
+    padding: '20px',
+  },
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+  },
+};
