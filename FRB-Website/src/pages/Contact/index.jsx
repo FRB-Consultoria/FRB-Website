@@ -20,7 +20,8 @@ export const Contact = () => {
               contato.
             </p>
           </div>
-          <form action="https://formsubmit.co/contatofrb@frbconsultoria.com.br" method="POST">
+          
+          <form action="https://formsubmit.co/no-reply@frbconsultoria.com.br" method="POST">
             <div>
               <Input
                 name="name"
@@ -62,7 +63,7 @@ export const Contact = () => {
             <input type="hidden" name="_next" value="https://frbconsultoria.com.br/contato/obrigadopelocontato"/>
             
             <input type="hidden" name="_captcha" value="false"/>
-          </form>
+         </form>
         </div>
       </Main>
       <Footer />

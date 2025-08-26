@@ -9,10 +9,12 @@ import { useEffect, } from "react";
 import { useNavigate } from "react-router";
 
 export const User = () => {
-  const { userInfo, observer, setObserver } = useContext(UserContext);
+  const { userInfo, observer, setObserver, user } = useContext(UserContext);
   // const [full, setFull] = useState(false);
   const navigate = useNavigate();
-  
+  useEffect(() => {
+    if (user.user_level !== "rh" && user.user_level !== "medic" && user.user_level !== "invoicinguser") navigate("/");
+  }, [user, navigate]);
   
   useEffect(() => {
     const token = JSON.parse(localStorage.getItem("@token"));

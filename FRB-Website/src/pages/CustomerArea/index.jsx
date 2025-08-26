@@ -1,4 +1,4 @@
-import { Main } from "./style";
+import { Main, ModalContainer, ModalButton, customStyles } from "./style"; // Importe os novos estilos
 import FRB from "../../assets/img/logoBranca.webp";
 import backLogin from "../../assets/img/IconBackPage.webp";
 import { Input } from "../../components/Input";
@@ -9,14 +9,16 @@ import { useForm } from "react-hook-form";
 import { AiFillEye } from "react-icons/ai";
 import { AiFillEyeInvisible } from "react-icons/ai";
 import { useState } from "react";
-import { schemaLogin } from "../../schemas"
+import { schemaLogin } from "../../schemas";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router";
+import Modal from "react-modal";
+
 export const CustomerArea = () => {
-  const navigate = useNavigate()
-  const { handleForm } = useContext(UserContext);
+  const navigate = useNavigate();
+  const { handleForm, showModal, setShowModal, userInfo } = useContext(UserContext);
   const [eye, setEye] = useState(true);
-  
+
   const {
     register,
     handleSubmit,
@@ -25,7 +27,21 @@ export const CustomerArea = () => {
     mode: "onBlur",
     resolver: yupResolver(schemaLogin),
   });
-  
+
+  const handleModalClose = () => {
+    setShowModal(false);
+  };
+
+  const handleFaturamentoClick = () => {
+    navigate("/faturamento");
+    handleModalClose();
+  };
+
+  const handleUserClick = () => {
+    navigate("/user");
+    handleModalClose();
+  };
+
   return (
     <>
       <Main>
@@ -98,6 +114,23 @@ export const CustomerArea = () => {
           </div>
         </div>
       </Main>
+
+      {userInfo.user_level === 'invoicinguser' && (
+        <Modal
+          isOpen={showModal}
+          onRequestClose={handleModalClose}
+          contentLabel="Invoicing and BI Options"
+          ariaHideApp={false}
+          style={customStyles}
+        >
+          <ModalContainer>
+            <h2>Escolha uma opção</h2>
+            <ModalButton onClick={handleFaturamentoClick}>Ir para o Faturamento</ModalButton>
+{userInfo.power_bi_link.includes("app")?<ModalButton onClick={handleUserClick}>Ir para o Power BI</ModalButton>:""}
+            
+          </ModalContainer>
+        </Modal>
+      )}
     </>
   );
 };

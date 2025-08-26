@@ -140,6 +140,29 @@ export const EditCompany = styled.div`
         button {
           width: 30%;
         }
+        .powerbi-button {
+          display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+height: 45px;
+background: var(--color-secondary);
+color: var(--color-white-1);
+border-radius: var(--radius-1);
+font-size:14px;
+transition: 1s;
+font-family: 'Roboto', sans-serif;
+font-weight:400;
+:hover{
+    filter: contrast(130%);
+}
+
+          img {
+            margin-right: 10px;
+            width: 20px;
+            height: 20px;
+          }
+        }
       }
       .clientList {
         li {
