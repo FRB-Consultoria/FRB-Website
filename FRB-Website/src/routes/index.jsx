@@ -14,7 +14,7 @@ import { MyAdminProvider } from "../Providers/adminProvider";
 import { ResetPassword } from "../pages/ResetPassword";
 import { Invoicinguser } from "../pages/Invoicinguser";
 import { Invoicingadmin } from "../pages/Invoicingadmin";
-
+import { BenefitsPortal } from "../pages/BenefitsPortal";
 export const MainRoutes = () => {
   return (
     <Routes>
@@ -30,6 +30,7 @@ export const MainRoutes = () => {
         <Route path="user" element={<User />} />
         <Route element={<MyAdminProvider/>}>
           <Route path="admin" element={<Admin />} />
+          <Route path="beneficios/portal" element={<BenefitsPortal />} />
           <Route path="faturamento/admin" element={<Invoicingadmin />} /> 
           <Route path="faturamento" element={<Invoicinguser />} />
 
