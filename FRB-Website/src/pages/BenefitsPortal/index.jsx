@@ -1,3 +1,4 @@
+// src/pages/BenefitsPortal/BenefitsPortal.jsx
 import React from "react";
 import { Main } from "./style";
 import { useBenefitsPortal } from "./hooks/useBenefitsPortal";
@@ -6,6 +7,7 @@ import { CompanyModal } from "./components/CompanyModal";
 import { ConfirmModal } from "./components/ConfirmModal";
 import { BeneficiariesTab } from "./components/BeneficiariesTab";
 import { ExclusionsTab } from "./components/ExclusionsTab";
+import { NotificationBell } from "./components/NotificationBell";
 
 export const BenefitsPortal = () => {
   const p = useBenefitsPortal();
@@ -52,6 +54,15 @@ export const BenefitsPortal = () => {
       />
 
       <section className="content">
+        <div className="globalTopbar">
+          <div />
+          <NotificationBell
+            benefitsSelectedCompany={p.benefitsSelectedCompany}
+            onNavigateToBeneficiary={p.navigateToBeneficiary}
+            onNavigateToExclusion={p.navigateToExclusion}
+          />
+        </div>
+
         {p.activeTab === "beneficiaries" && (
           <BeneficiariesTab
             titularList={p.titularList}
@@ -71,6 +82,7 @@ export const BenefitsPortal = () => {
             onMarkCardMissing={p.handleMarkCardMissing}
             onReactivateCard={p.handleReactivateCardInput}
             onMarkRegistered={p.handleMarkRegistered}
+            onSendCardEmail={p.handleSendCardEmail}
           />
         )}
 
@@ -84,6 +96,7 @@ export const BenefitsPortal = () => {
             sendExclusionReminder={p.sendExclusionReminder}
             markExclusionResolved={p.markExclusionResolved}
             benefitsSelectedCompany={p.benefitsSelectedCompany}
+            highlightExclusionId={p.highlightExclusionId}
           />
         )}
       </section>

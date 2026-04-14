@@ -1,3 +1,4 @@
+// src/pages/BenefitsPortal/hooks/useConfirmModal.js
 import { useState } from "react";
 
 const DEFAULT_CONFIG = {
@@ -7,6 +8,9 @@ const DEFAULT_CONFIG = {
   cancelText: "Cancelar",
   onConfirm: null,
   variant: "primary",
+  memberSelection: null,
+  emailTo: null,
+  onMemberToggle: null,
 };
 
 export const useConfirmModal = () => {
@@ -14,15 +18,8 @@ export const useConfirmModal = () => {
   const [loading, setLoading] = useState(false);
   const [config, setConfig] = useState(DEFAULT_CONFIG);
 
-  const open = ({
-    title,
-    message,
-    confirmText = "Confirmar",
-    cancelText = "Cancelar",
-    onConfirm,
-    variant = "primary",
-  }) => {
-    setConfig({ title, message, confirmText, cancelText, onConfirm, variant });
+  const open = (cfg) => {
+    setConfig({ ...DEFAULT_CONFIG, ...cfg });
     setIsOpen(true);
   };
 

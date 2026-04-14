@@ -1,6 +1,8 @@
+// src/pages/BenefitsPortal/components/Sidebar.jsx
 import React from "react";
 import { FiSearch, FiRefreshCw } from "react-icons/fi";
 import FRB from "../../../assets/img/logoBranca.webp";
+import { IntegrationPanel } from "./IntegrationPanel";
 
 export const Sidebar = ({
   activeTab,
@@ -97,6 +99,11 @@ export const Sidebar = ({
         Buscar
       </button>
     </div>
+
+    {/* ── Integration Panel (public_id / webhook) ── */}
+    {benefitsSelectedCompany && (
+      <IntegrationPanel benefitsSelectedCompany={benefitsSelectedCompany} />
+    )}
 
     {/* ── Beneficiaries filters ── */}
     {activeTab === "beneficiaries" && (
