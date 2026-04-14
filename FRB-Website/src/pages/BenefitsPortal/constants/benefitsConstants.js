@@ -1,3 +1,5 @@
+// src/pages/BenefitsPortal/constants/benefitsConstants.js
+
 export const registrationLabelMap = {
   to_register: "A cadastrar",
   registered_waiting_card: "Aguardando carteirinha",
@@ -58,6 +60,7 @@ const LABEL_MAP = {
   PLAN_REGISTRATION_STATUS: "Status do cadastro no plano",
   REGISTERED_IN_PLAN_AT: "Cadastrado no plano em",
   CARD_SAVED_AT: "Carteirinhas salvas em",
+  LAST_CARD_EMAIL_SENT_AT: "E-mail de carteirinha enviado em",
   ACTIVE: "Ativo",
   CREATED_AT: "Criado em",
   UPDATED_AT: "Atualizado em",
