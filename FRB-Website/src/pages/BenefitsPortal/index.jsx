@@ -40,6 +40,7 @@ export const BenefitsPortal = () => {
         benefitsSearch={p.benefitsSearch}
         onSearchChange={p.setBenefitsSearch}
         onSearch={p.onSearch}
+        onClearSearch={p.onClearSearch}
         onLoadCompany={p.onLoadCompany}
         benefPlanFilter={p.benefPlanFilter}
         setBenefPlanFilter={p.setBenefPlanFilter}
@@ -83,6 +84,12 @@ export const BenefitsPortal = () => {
             onReactivateCard={p.handleReactivateCardInput}
             onMarkRegistered={p.handleMarkRegistered}
             onSendCardEmail={p.handleSendCardEmail}
+            toRegisterOpen={p.toRegisterOpen}
+            setToRegisterOpen={p.setToRegisterOpen}
+            toRegisterLoading={p.toRegisterLoading}
+            toRegisterItems={p.toRegisterItems}
+            toRegisterTotal={p.toRegisterTotal}
+            onToRegisterClick={p.handleOpenToRegister}
           />
         )}
 

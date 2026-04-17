@@ -1,6 +1,6 @@
 // src/pages/BenefitsPortal/components/Sidebar.jsx
 import React from "react";
-import { FiSearch, FiRefreshCw } from "react-icons/fi";
+import { FiSearch, FiRefreshCw, FiX } from "react-icons/fi";
 import FRB from "../../../assets/img/logoBranca.webp";
 import { IntegrationPanel } from "./IntegrationPanel";
 
@@ -14,6 +14,7 @@ export const Sidebar = ({
   benefitsSearch,
   onSearchChange,
   onSearch,
+  onClearSearch,
   onLoadCompany,
   benefPlanFilter,
   setBenefPlanFilter,
@@ -86,12 +87,21 @@ export const Sidebar = ({
 
       <div className="field" style={{ marginTop: 8 }}>
         <label>Busca</label>
-        <input
-          value={benefitsSearch}
-          onChange={(e) => onSearchChange(e.target.value)}
-          maxLength={120}
-          placeholder="Nome, CPF, matrícula ou plano..."
-        />
+        <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+          <input
+            value={benefitsSearch}
+            onChange={(e) => onSearchChange(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && onSearch()}
+            maxLength={120}
+            placeholder="Nome, CPF, matrícula ou plano..."
+            style={{ flex: 1 }}
+          />
+          {benefitsSearch && (
+            <button type="button" className="filterClearBtn" onClick={onClearSearch} title="Limpar busca">
+              <FiX />
+            </button>
+          )}
+        </div>
       </div>
 
       <button className="ghostBtn" onClick={onSearch} type="button">
@@ -111,22 +121,34 @@ export const Sidebar = ({
         <div className="sectionTitle">Filtros da lista</div>
 
         <div className="field">
-          <label>Status do cadastro no plano</label>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <label style={{ marginBottom: 0 }}>Status do cadastro no plano</label>
+            {benefRegistrationFilter !== "all" && (
+              <button type="button" className="filterClearBtn" onClick={() => setBenefRegistrationFilter("all")} title="Limpar filtro">
+                <FiX /> Limpar
+              </button>
+            )}
+          </div>
           <select
             value={benefRegistrationFilter}
             onChange={(e) => setBenefRegistrationFilter(e.target.value)}
           >
             <option value="all">Todos</option>
             <option value="to_register">A cadastrar</option>
-            <option value="registered_waiting_card">
-              Aguardando carteirinha
-            </option>
+            <option value="registered_waiting_card">Aguardando carteirinha</option>
             <option value="card_saved">Cadastro confirmado</option>
           </select>
         </div>
 
         <div className="field">
-          <label>Plano</label>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <label style={{ marginBottom: 0 }}>Plano</label>
+            {benefPlanFilter !== "all" && (
+              <button type="button" className="filterClearBtn" onClick={() => setBenefPlanFilter("all")} title="Limpar filtro">
+                <FiX /> Limpar
+              </button>
+            )}
+          </div>
           <select
             value={benefPlanFilter}
             onChange={(e) => setBenefPlanFilter(e.target.value)}
@@ -148,7 +170,14 @@ export const Sidebar = ({
         <div className="sectionTitle">Filtros das exclusões</div>
 
         <div className="field">
-          <label>Status</label>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <label style={{ marginBottom: 0 }}>Status</label>
+            {exclStatus !== "all" && (
+              <button type="button" className="filterClearBtn" onClick={() => setExclStatus("all")} title="Limpar filtro">
+                <FiX /> Limpar
+              </button>
+            )}
+          </div>
           <select
             value={exclStatus}
             onChange={(e) => setExclStatus(e.target.value)}
@@ -161,7 +190,14 @@ export const Sidebar = ({
         </div>
 
         <div className="field">
-          <label>Plano</label>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <label style={{ marginBottom: 0 }}>Plano</label>
+            {exclPlano && (
+              <button type="button" className="filterClearBtn" onClick={() => setExclPlano("")} title="Limpar filtro">
+                <FiX /> Limpar
+              </button>
+            )}
+          </div>
           <select
             value={exclPlano}
             onChange={(e) => setExclPlano(e.target.value)}

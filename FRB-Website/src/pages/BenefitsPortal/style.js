@@ -372,6 +372,109 @@ export const Main = styled.main`
     font-weight: 900;
   }
 
+  /* Chip "A cadastrar" clicável */
+  .metaChipBtn {
+    cursor: pointer;
+    transition: box-shadow 0.15s, transform 0.1s;
+  }
+  .metaChipBtn:hover {
+    box-shadow: 0 4px 18px rgba(18, 59, 125, 0.15);
+    transform: translateY(-1px);
+  }
+  .metaChipAlert strong {
+    color: var(--portal-danger);
+  }
+
+  /* Dropdown "A cadastrar" */
+  .toRegisterDropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    min-width: 280px;
+    max-width: 360px;
+    background: #fff;
+    border: 1px solid var(--portal-border);
+    border-radius: 14px;
+    box-shadow: 0 12px 36px rgba(16, 35, 63, 0.14);
+    z-index: 200;
+    overflow: hidden;
+  }
+  .toRegDropdownHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px 8px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--portal-primary);
+    border-bottom: 1px solid var(--portal-border);
+  }
+  .toRegCloseBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--portal-muted);
+    padding: 2px 4px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    &:hover { background: rgba(18,59,125,0.07); color: var(--portal-primary); }
+  }
+  .toRegDropdownEmpty {
+    padding: 14px;
+    font-size: 0.83rem;
+    color: var(--portal-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .toRegDropdownNote {
+    padding: 6px 14px 2px;
+    font-size: 0.75rem;
+    color: var(--portal-muted);
+    font-style: italic;
+  }
+  .toRegDropdownList {
+    max-height: 280px;
+    overflow-y: auto;
+  }
+  .toRegDropdownItem {
+    padding: 9px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(18,59,125,0.05);
+    transition: background 0.1s;
+    &:last-child { border-bottom: none; }
+    &:hover { background: rgba(18,59,125,0.05); }
+  }
+  .toRegItemName {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--portal-text);
+  }
+  .toRegItemCpf {
+    font-size: 0.77rem;
+    color: var(--portal-muted);
+    margin-top: 2px;
+  }
+
+  /* Botão limpar filtro */
+  .filterClearBtn {
+    background: none;
+    border: 1px solid rgba(180,35,24,0.25);
+    color: var(--portal-danger);
+    border-radius: 8px;
+    padding: 2px 7px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    line-height: 1;
+    transition: background 0.15s;
+    &:hover { background: rgba(180,35,24,0.07); }
+  }
+
   .workspace {
     display: grid;
     gap: 18px;

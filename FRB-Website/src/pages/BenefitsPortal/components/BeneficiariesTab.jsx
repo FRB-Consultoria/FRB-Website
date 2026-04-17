@@ -1,6 +1,6 @@
 // src/pages/BenefitsPortal/components/BeneficiariesTab.jsx
-import React from "react";
-import { FiChevronLeft, FiChevronRight, FiUsers, FiAlertCircle, FiCheckCircle } from "react-icons/fi";
+import React, { useRef, useEffect } from "react";
+import { FiChevronLeft, FiChevronRight, FiUsers, FiAlertCircle, FiCheckCircle, FiX, FiUserCheck } from "react-icons/fi";
 import { PersonCard } from "./PersonCard";
 import { RegistrationChip, IntakeChip } from "./BenefitsChips";
 import { safeText, formatCPF } from "../utils/benefitsFormatters";
@@ -55,10 +55,29 @@ export const BeneficiariesTab = ({
   onReactivateCard,
   onMarkRegistered,
   onSendCardEmail,
+  toRegisterOpen,
+  setToRegisterOpen,
+  toRegisterLoading,
+  toRegisterItems,
+  toRegisterTotal,
+  onToRegisterClick,
 }) => {
   const familyColor = currentRoot
     ? getFamilyColor(currentRoot, currentRoot.DEPENDENTES || [])
     : null;
+
+  // Fechar dropdown ao clicar fora
+  const toRegisterRef = useRef(null);
+  useEffect(() => {
+    if (!toRegisterOpen) return;
+    const handler = (e) => {
+      if (toRegisterRef.current && !toRegisterRef.current.contains(e.target)) {
+        setToRegisterOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [toRegisterOpen, setToRegisterOpen]);
 
   const pendingReasons =
     currentRoot && familyColor && familyColor !== "green"
@@ -78,8 +97,53 @@ export const BeneficiariesTab = ({
         <div className="statsRow">
           <div className="metaChip"><span>Total da página</span><strong>{titularList.length}</strong></div>
           <div className="metaChip"><span>Total no geral</span><strong>{beneficiariesMeta?.count || 0}</strong></div>
-          <div className="metaChip"><span>A cadastrar</span>
-            <strong>{titularList.filter((item) => String(item.PLAN_REGISTRATION_STATUS) === "to_register").length}</strong>
+
+          {/* Chip clicável "A cadastrar" */}
+          <div
+            ref={toRegisterRef}
+            className={`metaChip metaChipBtn${toRegisterTotal > 0 ? " metaChipAlert" : ""}`}
+            onClick={onToRegisterClick}
+            title="Ver lista de titulares pendentes de cadastro"
+            style={{ cursor: "pointer", userSelect: "none", position: "relative" }}
+          >
+            <span>A cadastrar</span>
+            <strong>{toRegisterTotal}</strong>
+
+            {toRegisterOpen && (
+              <div
+                className="toRegisterDropdown"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="toRegDropdownHeader">
+                  <span><FiUserCheck style={{ marginRight: 4 }} />Pendentes de cadastro</span>
+                  <button type="button" onClick={() => setToRegisterOpen(false)} className="toRegCloseBtn"><FiX /></button>
+                </div>
+                {toRegisterLoading ? (
+                  <div className="toRegDropdownEmpty">
+                    <div className="loaderDots"><span /><span /><span /></div>
+                    Carregando...
+                  </div>
+                ) : toRegisterItems.length === 0 ? (
+                  <div className="toRegDropdownEmpty">Nenhum titular pendente encontrado.</div>
+                ) : (
+                  <div className="toRegDropdownList">
+                    {toRegisterTotal > toRegisterItems.length && (
+                      <div className="toRegDropdownNote">Mostrando {toRegisterItems.length} de {toRegisterTotal}</div>
+                    )}
+                    {toRegisterItems.map((item) => (
+                      <div
+                        key={item.id}
+                        className="toRegDropdownItem"
+                        onClick={() => { handleSelectRoot(item.id); setToRegisterOpen(false); }}
+                      >
+                        <div className="toRegItemName">{safeText(item.NOME)}</div>
+                        <div className="toRegItemCpf">CPF: {formatCPF(item.CPF_TIT)}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

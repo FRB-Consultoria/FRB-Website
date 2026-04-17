@@ -26,7 +26,7 @@ export const useBenefitsPortal = () => {
     goBenefitsNextPage, goBenefitsPrevPage,
     sendExclusionReminder, markExclusionResolved,
     setExclusionCardNumber, loadBenefitsForCompany,
-    refreshBenefitsLists,
+    refreshBenefitsLists, fetchBeneficiariesWithSearch,
   } = useContext(AdminContext);
 
   const userLevel = userInfo?.user_level || null;
@@ -44,6 +44,10 @@ export const useBenefitsPortal = () => {
   const [exclStatus, setExclStatus] = useState("all");
   const [exclPlano, setExclPlano] = useState("");
   const [copiedKey, setCopiedKey] = useState("");
+  const [toRegisterOpen, setToRegisterOpen] = useState(false);
+  const [toRegisterLoading, setToRegisterLoading] = useState(false);
+  const [toRegisterItems, setToRegisterItems] = useState([]);
+  const [toRegisterTotal, setToRegisterTotal] = useState(0);
   // ID a ser destacado na aba de exclusões quando navegado por notificação
   const [highlightExclusionId, setHighlightExclusionId] = useState(null);
 
@@ -239,7 +243,38 @@ export const useBenefitsPortal = () => {
     if (!selectedRootId || !stillExists) handleSelectRoot(titularList[0].id);
   }, [titularList, selectedRootId, benefitsSelectedCompany, activeTab, handleSelectRoot]);
 
-  // Actions
+  // ── "A cadastrar" — contagem total e dropdown ──────────────────────────────
+  useEffect(() => {
+    setToRegisterItems([]);
+    if (!benefitsSelectedCompany) { setToRegisterTotal(0); setToRegisterOpen(false); return; }
+    api.get("benefits/beneficiaries/", {
+      params: { client_id: benefitsSelectedCompany, plan_registration_status: "to_register", page_size: 1 },
+      skipGlobalLoader: true,
+    }).then((res) => setToRegisterTotal(res.data?.count || 0)).catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [benefitsSelectedCompany, filterBenefitsBeneficiaries]);
+
+  const handleOpenToRegister = useCallback(async () => {
+    if (toRegisterOpen) { setToRegisterOpen(false); return; }
+    setToRegisterOpen(true);
+    if (!benefitsSelectedCompany) return;
+    setToRegisterLoading(true);
+    try {
+      const res = await api.get("benefits/beneficiaries/", {
+        params: { client_id: benefitsSelectedCompany, plan_registration_status: "to_register", page_size: 100 },
+        skipGlobalLoader: true,
+      });
+      const items = (res.data?.results || []).map(normalizeListItem);
+      setToRegisterItems(items);
+      setToRegisterTotal(res.data?.count || items.length);
+    } catch {
+      notifyError("Erro ao carregar pendências.");
+    } finally {
+      setToRegisterLoading(false);
+    }
+  }, [benefitsSelectedCompany, toRegisterOpen]);
+
+  // ── Actions
   const onConfirmCompany = async () => {
     if (!companyPick) { notifyError("Selecione uma empresa."); return; }
     try {
@@ -266,6 +301,14 @@ export const useBenefitsPortal = () => {
       notifySucess("Busca aplicada!");
     } catch (error) { console.error(error); notifyError("Falha ao buscar."); }
   };
+
+  const onClearSearch = useCallback(async () => {
+    setBenefitsSearch("");
+    if (!benefitsSelectedCompany) return;
+    try {
+      await fetchBeneficiariesWithSearch("", benefitsSelectedCompany);
+    } catch (err) { console.error(err); }
+  }, [benefitsSelectedCompany, fetchBeneficiariesWithSearch]);
 
   const onCardChange = (beneficiaryId, cardType, value) => {
     setCardDrafts((prev) => ({
@@ -543,5 +586,8 @@ export const useBenefitsPortal = () => {
     handleSendCardEmail, navigateToBeneficiary, navigateToExclusion,
     confirmModal,
     highlightExclusionId,
+    toRegisterOpen, setToRegisterOpen, toRegisterLoading, toRegisterItems, toRegisterTotal,
+    handleOpenToRegister,
+    onClearSearch,
   };
 };

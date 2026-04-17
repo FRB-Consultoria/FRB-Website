@@ -589,6 +589,14 @@ export const AdminProvider = ({ children }) => {
     }
   };
 
+  // Busca beneficiários com search explícito (evita problema de closure com estado)
+  const fetchBeneficiariesWithSearch = async (search, clientId) => {
+    const selectedClientId = clientId || benefitsSelectedCompany;
+    if (!selectedClientId) return [];
+    beneficiariesCacheRef.current.clear();
+    return fetchBenefitsBeneficiaries({ page: 1, search, silent: false, clientId: selectedClientId });
+  };
+
   const loadBenefitsForCompany = async (
     clientId,
     button_name = "Carregar"
@@ -1029,6 +1037,7 @@ export const AdminProvider = ({ children }) => {
         setExclusionCardNumber,
         loadBenefitsForCompany,
         refreshBenefitsLists,
+        fetchBeneficiariesWithSearch,
       }}
     >
       {children}
