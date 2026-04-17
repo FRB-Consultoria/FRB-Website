@@ -95,7 +95,7 @@ export const ConfirmModal = ({ open, config, loading, onClose, onConfirm }) => {
                       </span>
                       {m.noCard && (
                         <span style={{ display: "block", fontSize: "0.74rem", color: "#b84040", marginTop: 2 }}>
-                          Sem carteirinha cadastrada — não pode ser incluído neste envio
+                          {m.noCardReason || "Sem carteirinhas completas — não pode ser incluído neste envio"}
                         </span>
                       )}
                     </div>

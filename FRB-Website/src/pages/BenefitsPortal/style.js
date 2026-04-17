@@ -857,6 +857,48 @@ export const Main = styled.main`
     padding-top: 16px;
   }
 
+  /* ── Fluxo em passos ── */
+  .registrationStep {
+    display: grid;
+    gap: 8px;
+    background: rgba(18, 59, 125, 0.03);
+    border: 1px solid rgba(18, 59, 125, 0.08);
+    border-radius: 12px;
+    padding: 12px 14px;
+  }
+  .stepBadge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    padding: 3px 10px;
+    border-radius: 20px;
+    width: fit-content;
+  }
+  .stepBadge1 {
+    background: rgba(161, 92, 0, 0.12);
+    color: var(--portal-warning);
+  }
+  .stepBadge2 {
+    background: rgba(18, 59, 125, 0.1);
+    color: var(--portal-primary);
+  }
+  .stepBadge3 {
+    background: rgba(91, 91, 91, 0.09);
+    color: #5b5b5b;
+  }
+  .stepBadge3Active {
+    background: rgba(21, 115, 71, 0.12);
+    color: var(--portal-success);
+  }
+  .stepDesc {
+    font-size: 0.8rem;
+    color: var(--portal-muted);
+    margin: 0;
+    line-height: 1.45;
+  }
+
   .cardInputsGrid {
     display: grid;
     gap: 14px;

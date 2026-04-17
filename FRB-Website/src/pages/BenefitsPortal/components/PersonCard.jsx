@@ -115,12 +115,27 @@ export const PersonCard = ({
     (f) => f !== "DEPENDENTES" && f !== "EVENTOS_RECENTES"
   );
 
+  // ── Passos do fluxo ──────────────────────────────────────────────────────────
+  const planStatus = String(person.PLAN_REGISTRATION_STATUS || "").toLowerCase();
+  const isRegistered = planStatus !== "to_register"; // Passo 1 concluído
   const hasEmail = Boolean(person.EMAIL_DO_COLABORADOR);
   const healthCard = String(person.CARTEIRINHA_SAUDE || "").trim();
   const dentalCard = String(person.CARTEIRINHA_DENTAL || "").trim();
-  const healthValid = isValidCardNumber(healthCard);
-  const dentalValid = isValidCardNumber(dentalCard);
-  const canSendEmail = isTitular && hasEmail && (healthValid || dentalValid);
+  const healthOk = isValidCardNumber(healthCard) || Boolean(person.NO_HEALTH_CARD);
+  const dentalOk = isValidCardNumber(dentalCard) || Boolean(person.NO_DENTAL_CARD);
+  const allCardsHandled = healthOk && dentalOk;        // Passo 2 concluído
+  const canSendEmail = isTitular && hasEmail && allCardsHandled;
+
+  // Motivo de bloqueio do botão de e-mail (para o title/tooltip)
+  const emailBlockReason = !hasEmail
+    ? "Titular sem e-mail cadastrado"
+    : !healthOk && !dentalOk
+    ? "Carteirinhas de saúde e dental não cadastradas nem marcadas como inexistentes"
+    : !healthOk
+    ? "Carteirinha de saúde não cadastrada nem marcada como inexistente"
+    : !dentalOk
+    ? "Carteirinha dental não cadastrada nem marcada como inexistente"
+    : null;
 
   // Pendências específicas de carteirinha desta pessoa
   const cardPendingReasons = getPersonPendingReasons(person);
@@ -168,98 +183,119 @@ export const PersonCard = ({
         </div>
 
         <div className="actionsBlock">
-          {/* Inputs de carteirinha */}
-          <div className="cardInputsGrid">
-            <div data-person-id={person.id} data-card-type="health">
-              <CardInputBlock
-                person={person}
-                cardType="health"
-                draftValue={getCardDraftValue(person.id, "health")}
-                onChange={onCardChange}
-                onSave={onSaveCard}
-                onMarkMissing={onMarkCardMissing}
-                onReactivate={onReactivateCard}
-              />
+          {/* ── Passo 1: Marcar como cadastrado ── */}
+          {!isRegistered && (
+            <div className="registrationStep">
+              <div className="stepBadge stepBadge1">Passo 1</div>
+              <p className="stepDesc">Marque o colaborador como cadastrado na operadora para liberar o preenchimento das carteirinhas.</p>
+              <div className="actionButtons">
+                <button
+                  className="smallGhostBtn actionInlineBtn"
+                  onClick={() => onMarkRegistered(person)}
+                  type="button"
+                >
+                  <FiUserCheck /> Marcar cadastrado
+                </button>
+              </div>
             </div>
-            <div data-person-id={person.id} data-card-type="dental">
-              <CardInputBlock
-                person={person}
-                cardType="dental"
-                draftValue={getCardDraftValue(person.id, "dental")}
-                onChange={onCardChange}
-                onSave={onSaveCard}
-                onMarkMissing={onMarkCardMissing}
-                onReactivate={onReactivateCard}
-              />
-            </div>
-          </div>
+          )}
 
-          {/* Pendências específicas de carteirinha */}
-          {cardPendingReasons.length > 0 && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 4 }}>
-              {cardPendingReasons.map((reason, i) => (
-                <span key={i} className="chip warning">
-                  <FiAlertTriangle style={{ fontSize: "0.8rem" }} />
-                  {reason}
+          {/* ── Passo 2 + 3: Carteirinhas e envio de e-mail (só após cadastrado) ── */}
+          {isRegistered && (
+            <>
+              {/* Badge de cadastrado */}
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                <span className="chip success" style={{ pointerEvents: "none" }}>
+                  <FiUserCheck /> {isTitular ? "Titular cadastrado" : "Dependente cadastrado"}
                 </span>
-              ))}
-            </div>
+              </div>
+
+              {/* Inputs de carteirinha */}
+              <div className="registrationStep">
+                <div className="stepBadge stepBadge2">Passo 2</div>
+                <p className="stepDesc">Preencha as carteirinhas ou marque-as como inexistentes neste plano.</p>
+                <div className="cardInputsGrid">
+                  <div data-person-id={person.id} data-card-type="health">
+                    <CardInputBlock
+                      person={person}
+                      cardType="health"
+                      draftValue={getCardDraftValue(person.id, "health")}
+                      onChange={onCardChange}
+                      onSave={onSaveCard}
+                      onMarkMissing={onMarkCardMissing}
+                      onReactivate={onReactivateCard}
+                    />
+                  </div>
+                  <div data-person-id={person.id} data-card-type="dental">
+                    <CardInputBlock
+                      person={person}
+                      cardType="dental"
+                      draftValue={getCardDraftValue(person.id, "dental")}
+                      onChange={onCardChange}
+                      onSave={onSaveCard}
+                      onMarkMissing={onMarkCardMissing}
+                      onReactivate={onReactivateCard}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Pendências específicas de carteirinha */}
+              {cardPendingReasons.length > 0 && (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 4 }}>
+                  {cardPendingReasons.map((reason, i) => (
+                    <span key={i} className="chip warning">
+                      <FiAlertTriangle style={{ fontSize: "0.8rem" }} />
+                      {reason}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {/* Passo 3: Enviar e-mail (só para titular, aparece após ambas as carteirinhas) */}
+              {isTitular && (
+                <div className="registrationStep" style={{ marginTop: 10, opacity: allCardsHandled ? 1 : 0.6 }}>
+                  <div className={`stepBadge ${allCardsHandled ? "stepBadge3Active" : "stepBadge3"}`}>Passo 3</div>
+                  <p className="stepDesc">
+                    {allCardsHandled
+                      ? "Carteirinhas prontas. Envie o e-mail para o colaborador."
+                      : emailBlockReason}
+                  </p>
+                  <div className="actionButtons">
+                    <button
+                      className="smallBtn actionInlineBtn"
+                      onClick={() => onSendCardEmail && onSendCardEmail(person)}
+                      disabled={!canSendEmail}
+                      type="button"
+                      title={emailBlockReason || "Enviar e-mail com carteirinhas (titular + dependentes)"}
+                    >
+                      <FiMail /> Enviar carteirinhas
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* E-mail pendente — somente no titular quando carteirinhas OK */}
+              {emailPending && (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 4 }}>
+                  <span className="chip warning">
+                    <FiMail style={{ fontSize: "0.8rem" }} />
+                    E-mail de carteirinhas não enviado
+                  </span>
+                </div>
+              )}
+
+              {/* Conclusão — aparece quando tudo está resolvido */}
+              {isFullyComplete && (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 4 }}>
+                  <span className="chip success">
+                    <FiCheckCircle style={{ fontSize: "0.8rem" }} />
+                    {isTitular ? "Cadastro e e-mail concluídos" : "Cadastro concluído"}
+                  </span>
+                </div>
+              )}
+            </>
           )}
-
-          {/* E-mail pendente — somente no titular quando carteirinhas estão ok */}
-          {emailPending && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 4 }}>
-              <span className="chip warning">
-                <FiMail style={{ fontSize: "0.8rem" }} />
-                E-mail de carteirinhas não enviado
-              </span>
-            </div>
-          )}
-
-          {/* Conclusão — aparece quando tudo está resolvido */}
-          {isFullyComplete && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 4 }}>
-              <span className="chip success">
-                <FiCheckCircle style={{ fontSize: "0.8rem" }} />
-                {isTitular ? "Cadastro e e-mail concluídos" : "Cadastro concluído"}
-              </span>
-            </div>
-          )}
-
-          {/* Botões de ação */}
-          <div className="actionButtons">
-            {String(person.PLAN_REGISTRATION_STATUS || "").toLowerCase() === "card_saved" ? (
-              <span className="chip success" style={{ pointerEvents: "none" }}>
-                <FiUserCheck /> {isTitular ? "Titular cadastrado" : "Dependente cadastrado"}
-              </span>
-            ) : (
-              <button
-                className="smallGhostBtn actionInlineBtn"
-                onClick={() => onMarkRegistered(person)}
-                type="button"
-              >
-                <FiUserCheck /> Marcar cadastrado
-              </button>
-            )}
-
-            {isTitular && (
-              <button
-                className="smallBtn actionInlineBtn"
-                onClick={() => onSendCardEmail && onSendCardEmail(person)}
-                disabled={!canSendEmail}
-                type="button"
-                title={
-                  !hasEmail
-                    ? "Titular sem e-mail cadastrado"
-                    : !healthValid && !dentalValid
-                    ? "Informe ao menos uma carteirinha com numeração válida"
-                    : "Enviar e-mail com carteirinhas (titular + dependentes)"
-                }
-              >
-                <FiMail /> Enviar carteirinhas
-              </button>
-            )}
-          </div>
         </div>
 
         <div className="historySection">

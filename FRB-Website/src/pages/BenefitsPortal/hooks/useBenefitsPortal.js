@@ -422,11 +422,15 @@ export const useBenefitsPortal = () => {
 
     const healthCard = String(person.CARTEIRINHA_SAUDE || "").trim();
     const dentalCard = String(person.CARTEIRINHA_DENTAL || "").trim();
-    const healthValid = isValidCardNumber(healthCard);
-    const dentalValid = isValidCardNumber(dentalCard);
+    const healthOk = isValidCardNumber(healthCard) || Boolean(person.NO_HEALTH_CARD);
+    const dentalOk = isValidCardNumber(dentalCard) || Boolean(person.NO_DENTAL_CARD);
 
-    if (!healthValid && !dentalValid) {
-      notifyError("Informe ao menos uma carteirinha com numeração válida antes de enviar o e-mail.");
+    if (!healthOk || !dentalOk) {
+      const missing = [];
+      if (!healthOk) missing.push("saúde");
+      if (!dentalOk) missing.push("dental");
+      const fields = missing.join(" e ");
+      notifyError(`Informe a carteirinha de ${fields} do titular ou marque-a como inexistente antes de enviar o e-mail.`);
       return;
     }
 
@@ -450,20 +454,21 @@ export const useBenefitsPortal = () => {
     _openMemberSelectionOrSend(person);
   };
 
-  // eslint-disable-next-line no-unused-vars
   const _openMemberSelectionOrSend = (person) => {
 
     const deps = person.DEPENDENTES || [];
 
-    // Verificar se um membro tem carteirinha cadastrada
-    const _hasCard = (p) => {
+    // Retorna null se o membro está completo, ou a razão específica do bloqueio
+    const _getBlockReason = (p) => {
       const dp = mapPerson(p);
-      return (
-        isValidCardNumber(String(dp.CARTEIRINHA_SAUDE || "").trim()) ||
-        isValidCardNumber(String(dp.CARTEIRINHA_DENTAL || "").trim()) ||
-        Boolean(dp.NO_HEALTH_CARD) ||
-        Boolean(dp.NO_DENTAL_CARD)
-      );
+      const healthOk = isValidCardNumber(String(dp.CARTEIRINHA_SAUDE || "").trim()) || Boolean(dp.NO_HEALTH_CARD);
+      const dentalOk = isValidCardNumber(String(dp.CARTEIRINHA_DENTAL || "").trim()) || Boolean(dp.NO_DENTAL_CARD);
+      if (healthOk && dentalOk) return null;
+      const missing = [];
+      if (!healthOk) missing.push("saúde");
+      if (!dentalOk) missing.push("dental");
+      const noun = missing.length === 1 ? "Carteirinha" : "Carteirinhas";
+      return `${noun} de ${missing.join(" e ")} não cadastrada(s) nem marcada(s) como inexistente(s)`;
     };
 
     // Separar terminados (excluídos do plano) dos demais
@@ -474,37 +479,38 @@ export const useBenefitsPortal = () => {
       return String(mapPerson(d).STATUS || "").toLowerCase() !== "terminated";
     });
 
-    // Titular tem carteirinha?
-    const titularHasCard = _hasCard(person);
+    const titularBlockReason = _getBlockReason(person);
 
-    // Montar allMembers: todos (titular + não-terminados), desativando quem não tem carteirinha
+    // Montar allMembers: titular + não-terminados, desativando quem não está completo
     const allMembers = [
       {
         id: person.id,
         name: person.NOME,
         tipo: "TITULAR",
-        checked: titularHasCard,
-        disabled: !titularHasCard,
-        noCard: !titularHasCard,
+        checked: titularBlockReason === null,
+        disabled: titularBlockReason !== null,
+        noCard: titularBlockReason !== null,
+        noCardReason: titularBlockReason,
       },
       ...nonTerminatedDeps.map((d) => {
         const dp = mapPerson(d);
-        const hasCard = _hasCard(dp);
+        const blockReason = _getBlockReason(dp);
         return {
           id: dp.id,
           name: dp.NOME,
           tipo: "DEPENDENTE",
-          checked: hasCard,
-          disabled: !hasCard,
-          noCard: !hasCard,
+          checked: blockReason === null,
+          disabled: blockReason !== null,
+          noCard: blockReason !== null,
+          noCardReason: blockReason,
         };
       }),
     ];
 
-    // Se nenhum membro tem carteirinha, não há nada para enviar
+    // Se nenhum membro está completo, não há nada para enviar
     const anySelectable = allMembers.some((m) => !m.disabled);
     if (!anySelectable) {
-      notifyError("Nenhum membro da família possui carteirinha cadastrada para envio.");
+      notifyError("Nenhum membro da família possui ambas as carteirinhas cadastradas ou marcadas como inexistentes.");
       return;
     }
 
