@@ -5,7 +5,7 @@ import { UserContext } from "../../../contexts/userContext/userContext";
 import { api } from "../../../services/api";
 import { notifySucess, notifyError } from "../../../Toastfy";
 import { normalizeListItem, mapPerson } from "../utils/benefitsHelpers";
-import { formatCardNumberInput, formatSearchInput, isValidCardNumber } from "../utils/benefitsFormatters";
+import { formatCardNumberInput, formatSearchInput, isValidCardNumber, formatDateTimeBR } from "../utils/benefitsFormatters";
 import { useConfirmModal } from "./useConfirmModal";
 
 const ALLOWED_LEVELS = ["benefitsadmin", "admin", "benefitsoperator"];
@@ -387,33 +387,91 @@ export const useBenefitsPortal = () => {
       return;
     }
 
+    // ── Verificar se e-mail já foi enviado anteriormente ─────────────────────
+    const lastSent = person.LAST_CARD_EMAIL_SENT_AT;
+    if (lastSent) {
+      const sentFormatted = formatDateTimeBR(lastSent);
+      confirmModal.open({
+        title: "E-mail já enviado anteriormente",
+        message: `Já foi enviado um e-mail de carteirinhas para ${person.EMAIL_DO_COLABORADOR} em ${sentFormatted}. Deseja enviar novamente?`,
+        confirmText: "Sim, reenviar",
+        cancelText: "Cancelar",
+        variant: "primary",
+        onConfirm: async () => {
+          _openMemberSelectionOrSend(person);
+        },
+      });
+      return;
+    }
+
+    _openMemberSelectionOrSend(person);
+  };
+
+  // eslint-disable-next-line no-unused-vars
+  const _openMemberSelectionOrSend = (person) => {
+
     const deps = person.DEPENDENTES || [];
 
-    // Filtrar dependentes TERMINADOS — não podem receber e-mail
-    const activeDeps = deps.filter((d) => {
-      const dp = mapPerson(d);
-      return String(dp.STATUS || "").toLowerCase() !== "terminated";
-    });
+    // Verificar se um membro tem carteirinha cadastrada
+    const _hasCard = (p) => {
+      const dp = mapPerson(p);
+      return (
+        isValidCardNumber(String(dp.CARTEIRINHA_SAUDE || "").trim()) ||
+        isValidCardNumber(String(dp.CARTEIRINHA_DENTAL || "").trim()) ||
+        Boolean(dp.NO_HEALTH_CARD) ||
+        Boolean(dp.NO_DENTAL_CARD)
+      );
+    };
+
+    // Separar terminados (excluídos do plano) dos demais
     const terminatedDeps = deps.filter((d) => {
-      const dp = mapPerson(d);
-      return String(dp.STATUS || "").toLowerCase() === "terminated";
+      return String(mapPerson(d).STATUS || "").toLowerCase() === "terminated";
+    });
+    const nonTerminatedDeps = deps.filter((d) => {
+      return String(mapPerson(d).STATUS || "").toLowerCase() !== "terminated";
     });
 
+    // Titular tem carteirinha?
+    const titularHasCard = _hasCard(person);
+
+    // Montar allMembers: todos (titular + não-terminados), desativando quem não tem carteirinha
     const allMembers = [
-      { id: person.id, name: person.NOME, tipo: "TITULAR", checked: true, disabled: false },
-      ...activeDeps.map((d) => {
+      {
+        id: person.id,
+        name: person.NOME,
+        tipo: "TITULAR",
+        checked: titularHasCard,
+        disabled: !titularHasCard,
+        noCard: !titularHasCard,
+      },
+      ...nonTerminatedDeps.map((d) => {
         const dp = mapPerson(d);
-        return { id: dp.id, name: dp.NOME, tipo: "DEPENDENTE", checked: true, disabled: false };
+        const hasCard = _hasCard(dp);
+        return {
+          id: dp.id,
+          name: dp.NOME,
+          tipo: "DEPENDENTE",
+          checked: hasCard,
+          disabled: !hasCard,
+          noCard: !hasCard,
+        };
       }),
     ];
 
-    // Se não tem dependentes ativos, enviar direto
-    if (activeDeps.length === 0 && deps.length === 0) {
+    // Se nenhum membro tem carteirinha, não há nada para enviar
+    const anySelectable = allMembers.some((m) => !m.disabled);
+    if (!anySelectable) {
+      notifyError("Nenhum membro da família possui carteirinha cadastrada para envio.");
+      return;
+    }
+
+    // Se não tem dependentes (nem terminados), enviar direto se titular tem carteirinha
+    if (deps.length === 0) {
       _doSendCardEmail(person, null);
       return;
     }
 
-    // Montar aviso sobre dependentes excluídos
+    // Aviso sobre terminados
     const terminatedWarning = terminatedDeps.length > 0
       ? `Nota: ${terminatedDeps.map((d) => mapPerson(d).NOME).join(", ")} ${terminatedDeps.length === 1 ? "foi excluído" : "foram excluídos"} do plano e não ${terminatedDeps.length === 1 ? "será incluído" : "serão incluídos"} neste envio.`
       : null;
@@ -430,13 +488,13 @@ export const useBenefitsPortal = () => {
       memberSelection,
       onMemberToggle: (memberId) => {
         memberSelection = memberSelection.map((m) =>
-          m.id === memberId ? { ...m, checked: !m.checked } : m
+          m.id === memberId && !m.disabled ? { ...m, checked: !m.checked } : m
         );
       },
       onConfirm: async () => {
-        const selectedIds = memberSelection.filter((m) => m.checked).map((m) => m.id);
+        const selectedIds = memberSelection.filter((m) => m.checked && !m.disabled).map((m) => m.id);
         if (selectedIds.length === 0) {
-          notifyError("Selecione ao menos um membro.");
+          notifyError("Selecione ao menos um membro com carteirinha.");
           throw new Error("Nenhum membro selecionado");
         }
         await _doSendCardEmail(person, selectedIds);

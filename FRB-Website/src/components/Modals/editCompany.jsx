@@ -9,8 +9,16 @@ import { RemoveClientModal } from "../../components/Modals/removeClient";
 import { EditClientModal } from "../../components/Modals/editClient";
 import { AdminContext } from "../../contexts/adminContext/adminContext";
 import { useForm } from "react-hook-form";
-import powerBiLogo from '../../assets/img/powerbi-logo.png'; 
+import powerBiLogo from '../../assets/img/powerbi-logo.png';
 import {CreateSubModal} from "./createSub"
+
+const OPERADORAS = [
+  { value: "",           label: "— Nenhuma —" },
+  { value: "bradesco",   label: "Bradesco Saúde" },
+  { value: "sulamerica", label: "SulAmérica Saúde" },
+  { value: "amil",       label: "Amil" },
+];
+
 export const EditCompanyModal = ({ client }) => {
   const { setClientModal } = useContext(UserContext);
   const { users, deactivateUser, updateClient } = useContext(AdminContext);
@@ -30,6 +38,7 @@ export const EditCompanyModal = ({ client }) => {
       contract_health: client.contract_health,
       contract_life: client.contract_life,
       contract_dental: client.contract_dental,
+      operadora: client.operadora || "",
     },
   });
 
@@ -103,6 +112,32 @@ export const EditCompanyModal = ({ client }) => {
               label="Contrato Dental"
               register={register("contract_dental")}
             />
+
+            {/* Seleção de Operadora */}
+            <label style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: "14px", fontWeight: "600", color: "var(--color-primary-2)" }}>
+              Operadora de Saúde / Dental
+              <select
+                {...register("operadora")}
+                style={{
+                  width: "100%",
+                  padding: "10px 12px",
+                  borderRadius: "6px",
+                  border: "1px solid #d0d5dd",
+                  fontSize: "14px",
+                  color: "#344054",
+                  backgroundColor: "#fff",
+                  marginTop: "4px",
+                  cursor: "pointer",
+                }}
+              >
+                {OPERADORAS.map((op) => (
+                  <option key={op.value} value={op.value}>
+                    {op.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+
             <Button type="submit" name="Atualizar"></Button>
           </form>
           <div className="positionClient">

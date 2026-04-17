@@ -276,7 +276,7 @@ const ExclusionPersonCard = ({ row, isTitular, onSendReminder, onResolve, benefi
             <strong>{safeText(row.card_number_dental)}</strong>
           </div>
           <div className="miniInfo">
-            <span>E-mail</span>
+            <span>{isTitular ? "E-mail" : "E-mail do Titular"}</span>
             <strong style={{ textTransform: "lowercase" }}>{row.email || "-"}</strong>
           </div>
           <div className="miniInfo">

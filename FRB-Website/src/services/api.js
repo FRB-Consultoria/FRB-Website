@@ -65,7 +65,18 @@ api.interceptors.response.use(
       requestLoader.stop();
     }
 
-    if (error?.response?.status === 403) {
+    const status = error?.response?.status;
+
+    // Token expirado ou inválido → limpa sessão e redireciona para login
+    if (status === 401) {
+      window.localStorage.removeItem("@token");
+      delete api.defaults.headers.common["Authorization"];
+      window.location.href = "/areadocliente";
+      return Promise.reject(error);
+    }
+
+    // Sem permissão → recarrega para forçar reavaliação de rota
+    if (status === 403) {
       window.location.reload();
     }
 
