@@ -137,7 +137,14 @@ export const BeneficiariesTab = ({
                         onClick={() => { handleSelectRoot(item.id); setToRegisterOpen(false); }}
                       >
                         <div className="toRegItemName">{safeText(item.NOME)}</div>
-                        <div className="toRegItemCpf">CPF: {formatCPF(item.CPF_TIT)}</div>
+                        <div className="toRegItemCpf">
+                          CPF: {formatCPF(item.CPF_TIT)}
+                          {Number(item.DEPENDENT_COUNT) > 0 && (
+                            <span style={{ marginLeft: 8, color: "#a15c00", fontWeight: 700 }}>
+                              + {item.DEPENDENT_COUNT} dep.
+                            </span>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>

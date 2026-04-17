@@ -243,14 +243,23 @@ export const useBenefitsPortal = () => {
     if (!selectedRootId || !stillExists) handleSelectRoot(titularList[0].id);
   }, [titularList, selectedRootId, benefitsSelectedCompany, activeTab, handleSelectRoot]);
 
-  // ── "A cadastrar" — contagem total e dropdown ──────────────────────────────
+  // ── "A cadastrar" — contagem total (titulares + dependentes) e dropdown ──────
+  const _calcToRegisterTotal = (results) => {
+    // Soma 1 (o próprio titular) + número de dependentes de cada titular
+    return results.reduce((acc, item) => acc + 1 + Number(item.dependent_count || 0), 0);
+  };
+
   useEffect(() => {
     setToRegisterItems([]);
     if (!benefitsSelectedCompany) { setToRegisterTotal(0); setToRegisterOpen(false); return; }
+    // Busca até 500 titulares para ter os dependent_counts e calcular o total real
     api.get("benefits/beneficiaries/", {
-      params: { client_id: benefitsSelectedCompany, plan_registration_status: "to_register", page_size: 1 },
+      params: { client_id: benefitsSelectedCompany, plan_registration_status: "to_register", page_size: 500 },
       skipGlobalLoader: true,
-    }).then((res) => setToRegisterTotal(res.data?.count || 0)).catch(() => {});
+    }).then((res) => {
+      const results = res.data?.results || [];
+      setToRegisterTotal(_calcToRegisterTotal(results));
+    }).catch(() => {});
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [benefitsSelectedCompany, filterBenefitsBeneficiaries]);
 
@@ -266,7 +275,7 @@ export const useBenefitsPortal = () => {
       });
       const items = (res.data?.results || []).map(normalizeListItem);
       setToRegisterItems(items);
-      setToRegisterTotal(res.data?.count || items.length);
+      setToRegisterTotal(_calcToRegisterTotal(items));
     } catch {
       notifyError("Erro ao carregar pendências.");
     } finally {
