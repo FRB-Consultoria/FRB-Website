@@ -61,6 +61,7 @@ export const BenefitsPortal = () => {
             benefitsSelectedCompany={p.benefitsSelectedCompany}
             onNavigateToBeneficiary={p.navigateToBeneficiary}
             onNavigateToExclusion={p.navigateToExclusion}
+            onNewNotification={p.handleNewNotification}
           />
         </div>
 

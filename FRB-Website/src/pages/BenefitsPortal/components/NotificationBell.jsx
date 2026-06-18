@@ -4,7 +4,7 @@ import { FiBell, FiCheck, FiCheckCircle, FiUserPlus, FiRefreshCw, FiUserX, FiCir
 import { api } from "../../../services/api";
 import { notifyError } from "../../../Toastfy";
 
-const POLL_INTERVAL = 30000;
+const POLL_INTERVAL = 10000; // 10s — portal atualiza em tempo real ao receber webhooks
 
 // Eventos que exigem ação do operador
 const ACTIONABLE_EVENT_TYPES = ["intake_create", "intake_update", "intake_exclude"];
@@ -32,6 +32,7 @@ export const NotificationBell = ({
   benefitsSelectedCompany,
   onNavigateToBeneficiary,
   onNavigateToExclusion,
+  onNewNotification,
 }) => {
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -40,6 +41,9 @@ export const NotificationBell = ({
   const [activeTab, setActiveTab] = useState("pending"); // "pending" | "done"
   const dropdownRef = useRef(null);
   const intervalRef = useRef(null);
+  const prevCountRef = useRef(null); // rastreia contagem anterior para detectar novidades
+  const onNewNotificationRef = useRef(onNewNotification);
+  useEffect(() => { onNewNotificationRef.current = onNewNotification; }, [onNewNotification]);
 
   const fetchCount = useCallback(async () => {
     if (!benefitsSelectedCompany) return;
@@ -48,7 +52,14 @@ export const NotificationBell = ({
         params: { client_id: benefitsSelectedCompany },
         skipGlobalLoader: true,
       });
-      setUnreadCount(res.data?.unread_count || 0);
+      const newCount = res.data?.unread_count || 0;
+      setUnreadCount(newCount);
+
+      // Se o count aumentou (novo webhook chegou), dispara refresh do portal
+      if (prevCountRef.current !== null && newCount > prevCountRef.current) {
+        onNewNotificationRef.current?.();
+      }
+      prevCountRef.current = newCount;
     } catch { /* silencioso */ }
   }, [benefitsSelectedCompany]);
 
@@ -58,6 +69,7 @@ export const NotificationBell = ({
     try {
       const res = await api.get("benefits/notifications/", {
         params: { client_id: benefitsSelectedCompany },
+        skipGlobalLoader: true,
       });
       const all = res.data?.results || res.data || [];
       setNotifications(all.filter(isActionable));

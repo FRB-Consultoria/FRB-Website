@@ -1,25 +1,31 @@
 import { ModalBackground } from "./ModalBackground";
-import { Button } from "../Button";
-import { RemoveCompanyStyle } from "./removeCompanyStyle";
 import { useContext } from "react";
 import { AdminContext } from "../../contexts/adminContext/adminContext";
 import { UserContext } from "../../contexts/userContext/userContext";
+import { ModalTitle, ConfirmText, BtnRow, ModalGhostBtn, ModalDangerBtn } from "./modalShared";
 
-export const RemoveCompanyModal = ({name, client_id}) => {
+export const RemoveCompanyModal = ({ name, client_id }) => {
   const { deleteClient } = useContext(AdminContext);
   const { setCompanyModal } = useContext(UserContext);
 
   return (
-      <RemoveCompanyStyle>
-          <ModalBackground size="removeCompany">
-            <h4>Tem certeza que deseja remover o cliente {name}?</h4>
-            <div>
-              <span>
-                <Button type="button" name="Cancelar" onClick={()=>{setCompanyModal(false)}}/>
-                <Button type="button" name="Sim, tenho certeza" onClick={()=>{deleteClient(client_id, "Sim, tenho certeza")}} />
-              </span>
-            </div>
-          </ModalBackground>
-      </RemoveCompanyStyle>
+    <ModalBackground size="removeCompany">
+      <ModalTitle>Remover Cliente</ModalTitle>
+      <ConfirmText>
+        Tem certeza que deseja remover o cliente <strong>{name}</strong>?
+        <br />Esta ação não pode ser desfeita.
+      </ConfirmText>
+      <BtnRow>
+        <ModalGhostBtn type="button" onClick={() => setCompanyModal(false)}>
+          Cancelar
+        </ModalGhostBtn>
+        <ModalDangerBtn
+          type="button"
+          onClick={() => deleteClient(client_id, "Sim, tenho certeza")}
+        >
+          Sim, remover
+        </ModalDangerBtn>
+      </BtnRow>
+    </ModalBackground>
   );
 };

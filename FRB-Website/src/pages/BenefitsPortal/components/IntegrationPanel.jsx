@@ -4,8 +4,15 @@ import { FiCopy, FiCheck, FiRefreshCw, FiShield, FiEye, FiEyeOff, FiMail, FiPlus
 import { api } from "../../../services/api";
 import { notifySucess, notifyError } from "../../../Toastfy";
 
+const OPERADORA_LABELS = {
+  bradesco:   "Bradesco Saúde",
+  sulamerica: "SulAmérica Saúde",
+  amil:       "Amil",
+};
+
 export const IntegrationPanel = ({ benefitsSelectedCompany }) => {
   const [integration, setIntegration] = useState(null);
+  const [clientData, setClientData] = useState(null);
   const [showKey, setShowKey] = useState(false);
   const [copied, setCopied] = useState(false);
   const [rotating, setRotating] = useState(false);
@@ -23,9 +30,18 @@ export const IntegrationPanel = ({ benefitsSelectedCompany }) => {
     } catch { /* silencioso */ }
   }, [benefitsSelectedCompany]);
 
+  const fetchClientData = useCallback(async () => {
+    if (!benefitsSelectedCompany) return;
+    try {
+      const res = await api.get(`clients/${benefitsSelectedCompany}/`, { skipGlobalLoader: true });
+      setClientData(res.data || null);
+    } catch { /* silencioso */ }
+  }, [benefitsSelectedCompany]);
+
   useEffect(() => {
     fetchIntegration();
-  }, [fetchIntegration]);
+    fetchClientData();
+  }, [fetchIntegration, fetchClientData]);
 
   const copyWebhookUrl = async () => {
     if (!integration?.webhook_url) return;
@@ -134,6 +150,43 @@ export const IntegrationPanel = ({ benefitsSelectedCompany }) => {
       {integration.last_used_at && (
         <div className="integrationMeta">
           Último uso: {new Date(integration.last_used_at).toLocaleString("pt-BR")}
+        </div>
+      )}
+
+      {/* Plano selecionado pela empresa */}
+      {clientData && (
+        <div style={{ marginTop: 16 }}>
+          <div className="sectionTitle" style={{ marginBottom: 8 }}>
+            Plano Selecionado
+          </div>
+          <div className="integrationKeyBox" style={{ gap: 10 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: "0.76rem", color: "rgba(255,255,255,0.5)" }}>Operadora</span>
+                <span style={{ fontSize: "0.82rem", fontWeight: 600, color: "#fff" }}>
+                  {OPERADORA_LABELS[clientData.operadora] || clientData.operadora || "Não informado"}
+                </span>
+              </div>
+              {clientData.contract_health && (
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: "0.76rem", color: "rgba(255,255,255,0.5)" }}>Contrato Saúde</span>
+                  <span style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.85)" }}>{clientData.contract_health}</span>
+                </div>
+              )}
+              {clientData.contract_dental && (
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: "0.76rem", color: "rgba(255,255,255,0.5)" }}>Contrato Dental</span>
+                  <span style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.85)" }}>{clientData.contract_dental}</span>
+                </div>
+              )}
+              {clientData.contract_life && (
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: "0.76rem", color: "rgba(255,255,255,0.5)" }}>Contrato Vida</span>
+                  <span style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.85)" }}>{clientData.contract_life}</span>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
 

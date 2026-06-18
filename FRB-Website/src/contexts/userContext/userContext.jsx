@@ -18,6 +18,8 @@ export const UserProvider = ({ children }) => {
   const [userInfo, setUserInfo] = useState("");
   const [observer, setObserver] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [showBenefitsModal, setShowBenefitsModal] = useState(false);
+  const [showRhModal, setShowRhModal] = useState(false);
 
   const navigate = useNavigate();
 
@@ -50,20 +52,22 @@ export const UserProvider = ({ children }) => {
 
       if (decodedToken.user_level === "invoicinguser") {
         setShowModal(true);
+      } else if (decodedToken.user_level === "benefitsadmin") {
+        setShowBenefitsModal(true);
+      } else if (decodedToken.user_level === "rh") {
+        // RH: exibe modal para escolher entre Power BI e Dashboard FRB
+        navigate("/user");
+        setShowRhModal(true);
       } else {
         if (decodedToken.user_level === "admin") {
           route = "/admin";
         } else if (decodedToken.user_level === "invoicingadmin") {
           route = "/faturamento/admin";
-        } else if (
-          decodedToken.user_level === "benefitsadmin" ||
-          decodedToken.user_level === "benefitsoperator"
-        ) {
+        } else if (decodedToken.user_level === "benefitsoperator") {
           route = "/beneficios/portal";
-        } else if (
-          decodedToken.user_level === "rh" ||
-          decodedToken.user_level === "medic"
-        ) {
+        } else if (decodedToken.user_level === "medic") {
+          route = "/user";
+        } else if (decodedToken.user_level === "corretor") {
           route = "/user";
         }
 
@@ -108,10 +112,12 @@ export const UserProvider = ({ children }) => {
         setUserInfo(decoded);
 
         const userId = decoded.user_id;
-        const response = await api.get(`users/${userId}/`);
+        const response = await api.get(`users/${userId}/`, { skipGlobalLoader: true, skipAuthRedirect: true });
         setUser(response.data);
       } catch (err) {
         console.log(err);
+        localStorage.removeItem("@token");
+        delete api.defaults.headers.common["Authorization"];
       } finally {
         setLoading(false);
       }
@@ -140,6 +146,10 @@ export const UserProvider = ({ children }) => {
         setSpinner,
         showModal,
         setShowModal,
+        showBenefitsModal,
+        setShowBenefitsModal,
+        showRhModal,
+        setShowRhModal,
       }}
     >
       {children}

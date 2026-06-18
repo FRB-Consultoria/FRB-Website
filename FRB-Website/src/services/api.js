@@ -8,12 +8,14 @@ import { requestLoader } from "./requestLoader";
 const rawBaseURL =
   import.meta.env.VITE_API_URL ||
   import.meta.env.VITE_BASE_URL ||
-  "http://127.0.0.1:8000/api/";
-// https://frbseguros.com.br/api/;
+  "http://127.0.0.1:8000/api/"
+  // "https://frbseguros.com.br/api/";
+  // "https://hom.frbseguros.com.br/api/";
 
 const normalizeBaseURL = (url) => {
   if (!url) return "http://127.0.0.1:8000/api/";
-//   if (!url) return "https://frbseguros.com.br/api/";
+  // if (!url) return "https://frbseguros.com.br/api/";
+    // if (!url) return "https://hom.frbseguros.com.br/api/";
 
   return url.endsWith("/") ? url : `${url}/`;
 };
@@ -21,12 +23,20 @@ const normalizeBaseURL = (url) => {
 const getStoredToken = () => {
   const tokenRaw = window.localStorage.getItem("@token");
   if (!tokenRaw) return null;
-
   try {
     return JSON.parse(tokenRaw);
   } catch {
     return tokenRaw;
   }
+};
+
+let _redirectingToLogin = false;
+const redirectToLogin = () => {
+  if (_redirectingToLogin) return;
+  _redirectingToLogin = true;
+  window.localStorage.removeItem("@token");
+  delete api.defaults.headers.common["Authorization"];
+  window.location.href = "/areadocliente";
 };
 
 export const api = axios.create({
@@ -68,17 +78,19 @@ api.interceptors.response.use(
     const status = error?.response?.status;
 
     // Token expirado ou inválido → limpa sessão e redireciona para login
+    // Exceto: endpoint de login (evita reload em credencial errada)
+    // Exceto: chamadas com skipAuthRedirect:true (evita redirect no carregamento inicial)
     if (status === 401) {
-      window.localStorage.removeItem("@token");
-      delete api.defaults.headers.common["Authorization"];
-      window.location.href = "/areadocliente";
+      const url = error?.config?.url || '';
+      const skipAuthRedirect = error?.config?.skipAuthRedirect;
+      if (!skipAuthRedirect && !url.includes('users/login/')) {
+        redirectToLogin();
+      }
       return Promise.reject(error);
     }
 
-    // Sem permissão → recarrega para forçar reavaliação de rota
-    if (status === 403) {
-      window.location.reload();
-    }
+    // 403 = sem permissão para este recurso (sessão ainda válida)
+    // Apenas propaga o erro — cada componente trata com seu próprio catch
 
     return Promise.reject(error);
   }

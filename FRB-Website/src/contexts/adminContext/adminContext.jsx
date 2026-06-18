@@ -365,9 +365,11 @@ export const AdminProvider = ({ children }) => {
       const [detailRes, eventsRes] = await Promise.all([
         api.get(BENEFITS_BENEFICIARY_DETAIL_ENDPOINT(beneficiaryId), {
           params: buildScopedParams({}, selectedClientId),
+          skipGlobalLoader: true,
         }),
         api.get(BENEFITS_BENEFICIARY_EVENTS_ENDPOINT(beneficiaryId), {
           params: buildScopedParams({}, selectedClientId),
+          skipGlobalLoader: true,
         }),
       ]);
 
@@ -686,7 +688,9 @@ export const AdminProvider = ({ children }) => {
     if (!user) return;
     if (
       user.user_level === "benefitsadmin" ||
-      user.user_level === "benefitsoperator"
+      user.user_level === "benefitsoperator" ||
+      user.perm_benefits_dashboard ||
+      (user.perm_benefits_billing && !user.perm_admin)
     )
       return;
     getDocuments();
@@ -747,7 +751,9 @@ export const AdminProvider = ({ children }) => {
     if (!user) return;
     if (
       user.user_level === "benefitsadmin" ||
-      user.user_level === "benefitsoperator"
+      user.user_level === "benefitsoperator" ||
+      user.perm_benefits_dashboard ||
+      (user.perm_benefits_billing && !user.perm_admin)
     )
       return;
     getSubinvoices();
@@ -801,6 +807,18 @@ export const AdminProvider = ({ children }) => {
     } finally {
       setLoading(false);
       setSpinner(false);
+    }
+  };
+
+  // Atualiza um ou mais campos de um usuário sem fechar o modal (usado pelos toggles de permissão)
+  const patchUser = async (user_id, patch, client_id) => {
+    try {
+      await api.patch(`users/${user_id}/`, patch);
+      const res = await api.get("users/");
+      setUsers(res.data.results.filter((u) => u.client_id == client_id));
+    } catch (err) {
+      console.error(err);
+      notifyError("Não foi possível atualizar a permissão.");
     }
   };
 
@@ -968,6 +986,7 @@ export const AdminProvider = ({ children }) => {
         clients,
         createUser,
         updateUser,
+        patchUser,
         setUsers,
         users,
         deleteUser,

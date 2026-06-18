@@ -3,6 +3,7 @@ import { MainRoutes as Routes } from "./routes";
 import { ToastContainer } from "react-toastify";
 import { UserProvider } from "./contexts/userContext/userContext";
 import { GlobalRequestLoader } from "./components/GlobalRequestLoader";
+import { InstallApp } from "./components/InstallApp";
 import "react-toastify/dist/ReactToastify.css";
 import { Animations } from "./styles/animations";
 // import { CookieBanner } from "./components/Cookies";
@@ -31,6 +32,7 @@ function App() {
       <UserProvider>
         <GlobalRequestLoader />
         <Routes />
+        <InstallApp />
       </UserProvider>
     </>
   );

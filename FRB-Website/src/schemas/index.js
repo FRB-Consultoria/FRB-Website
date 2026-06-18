@@ -25,7 +25,7 @@ export const createUserSchema = yup.object().shape({
   name: yup.string().required("Nome do usuário obrigatório"),
   email: yup.string().required("E-mail obrigatório").email("Email invalido"),
   user_level: yup.string(),
-  power_bi_link: yup.string().required("Link do power bi obrigatório"),
+  power_bi_link: yup.string().optional().default(""),
   description: yup.string(),
 });
 

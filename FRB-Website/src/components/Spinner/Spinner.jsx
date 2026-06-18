@@ -1,21 +1,7 @@
-import React from "react";
-import styled, { keyframes } from "styled-components";
+// src/components/Spinner/Spinner.jsx
+// Mantido por compatibilidade — agora usa o Loader ÚNICO da plataforma.
+import { Loader } from "../Loader";
 
-const spin = keyframes`
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-`;
+export const Spinner = ({ small }) => <Loader small={small} size={small ? 20 : 56} />;
 
-const SpinnerWrapper = styled.div`
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top: 4px solid white;
-  border-radius: 50%;
-  width: ${({ small }) => (small ? '20px' : '100px')};
-  height: ${({ small }) => (small ? '20px' : '100px')};
-  animation: ${spin} 1s linear infinite;
-  position: ${({ small }) => (small ? 'relative' : 'absolute')};
-  top: ${({ small }) => (small ? 'initial' : '50%')};
-  left: ${({ small }) => (small ? 'initial' : '50%')};
-`;
-
-export const Spinner = ({ small }) => <SpinnerWrapper small={small} />;
+export default Spinner;

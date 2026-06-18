@@ -1,95 +1,87 @@
 import { ModalBackground } from "./ModalBackground";
-import { Button } from "../Button";
-import { Input } from "../Input";
-import { CreateCompany } from "./createCompanyStyle";
-import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useContext } from "react";
 import { AdminContext } from "../../contexts/adminContext/adminContext";
 import { createClientSchema } from "../../schemas";
+import {
+  ModalTitle, ModalForm, ModalGrid, FieldGroup, FieldLabel, FieldInput,
+  FieldError, ModalPrimaryBtn,
+} from "./modalShared";
 
 export const CreateCompanyModal = () => {
   const { createClient } = useContext(AdminContext);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
+  const { register, handleSubmit, formState: { errors } } = useForm({
     mode: "onBlur",
     resolver: yupResolver(createClientSchema),
   });
 
   return (
-    <CreateCompany>
-      <ModalBackground size="createCompany">
-        <div>
-          <p className="textHeader">Adicionar cliente</p>
-          <form onSubmit={handleSubmit((body)=>createClient(body, "Adicionar"))}>
-            <Input
-              name="client_name"
-              type="text"
-              placeholder="Digite o nome do cliente"
-              label="Nome do cliente*"
-              register={register("client_name")}
-              error={errors.client_name && <p className="error">{errors.client_name.message}</p>}
-            />
-            <Input
-              name="cnpj"
-              type="text"
-              placeholder="Digite o cnpj do cliente"
-              label="CNPJ*"
-              register={register("cnpj")}
-              error={errors.cnpj && <p className="error">{errors.cnpj.message}</p>}
-            />
-            <Input
-              name="corporate_name"
-              type="text"
-              placeholder="Digite a razão social"
-              label="Razão social*"
-              register={register("corporate_name")}
-              error={errors.corporate_name && <p className="error">{errors.corporate_name.message}</p>}
-            />
-            <Input
-              name="tel"
-              type="tel"
-              placeholder="Digite o telefone do cliente"
-              label="Telefone"
-              register={register("tel")}
-            />
-            <Input
-              name="client_email"
-              type="email"
-              placeholder="Digite o e-mail do cliente"
-              label="E-mail"
-              register={register("client_email")}
-            />
-            <div className="positionContract">
-            <Input className="contractNumber"
-              name="contract_health"
+    <ModalBackground size="createCompany">
+      <ModalTitle>Adicionar Cliente</ModalTitle>
+      <ModalForm onSubmit={handleSubmit((body) => createClient(body, "Adicionar"))}>
+
+        <FieldGroup>
+          <FieldLabel>Nome do cliente *</FieldLabel>
+          <FieldInput placeholder="Nome do cliente" {...register("client_name")} />
+          {errors.client_name && <FieldError>{errors.client_name.message}</FieldError>}
+        </FieldGroup>
+
+        <FieldGroup>
+          <FieldLabel>CNPJ *</FieldLabel>
+          <FieldInput placeholder="00.000.000/0000-00" {...register("cnpj")} />
+          {errors.cnpj && <FieldError>{errors.cnpj.message}</FieldError>}
+        </FieldGroup>
+
+        <FieldGroup>
+          <FieldLabel>Razão Social *</FieldLabel>
+          <FieldInput placeholder="Razão social" {...register("corporate_name")} />
+          {errors.corporate_name && <FieldError>{errors.corporate_name.message}</FieldError>}
+        </FieldGroup>
+
+        <FieldGroup>
+          <FieldLabel>Telefone</FieldLabel>
+          <FieldInput type="tel" placeholder="(00) 00000-0000" {...register("tel")} />
+        </FieldGroup>
+
+        <FieldGroup>
+          <FieldLabel>E-mail</FieldLabel>
+          <FieldInput type="email" placeholder="email@empresa.com.br" {...register("client_email")} />
+        </FieldGroup>
+
+        <ModalGrid>
+          <FieldGroup>
+            <FieldLabel>Contrato Saúde</FieldLabel>
+            <FieldInput
               type="number"
-              placeholder="Digite o contrato de Saúde"
-              label="Contrato de Saúde"
-              register={register("contract_health")}
+              placeholder="Nº contrato"
+              {...register("contract_health")}
+              style={{ MozAppearance: "textfield" }}
             />
-            <Input className="contractNumber"
-              name="contract_life"
+          </FieldGroup>
+          <FieldGroup>
+            <FieldLabel>Contrato Vida</FieldLabel>
+            <FieldInput
               type="number"
-              placeholder="Digite o contrato de Vida"
-              label="Contrato de Vida"
-              register={register("contract_life")}
+              placeholder="Nº contrato"
+              {...register("contract_life")}
+              style={{ MozAppearance: "textfield" }}
             />
-            <Input className="contractNumber"
-              name="contract_dental"
+          </FieldGroup>
+          <FieldGroup>
+            <FieldLabel>Contrato Dental</FieldLabel>
+            <FieldInput
               type="number"
-              placeholder="Digite o contrato Dental"
-              label="Contrato Dental"
-              register={register("contract_dental")}
-            /></div>
-            <Button type="submit" name="Adicionar"></Button>
-          </form>
-        </div>
-      </ModalBackground>
-    </CreateCompany>
+              placeholder="Nº contrato"
+              {...register("contract_dental")}
+              style={{ MozAppearance: "textfield" }}
+            />
+          </FieldGroup>
+        </ModalGrid>
+
+        <ModalPrimaryBtn type="submit">Adicionar Cliente</ModalPrimaryBtn>
+      </ModalForm>
+    </ModalBackground>
   );
 };

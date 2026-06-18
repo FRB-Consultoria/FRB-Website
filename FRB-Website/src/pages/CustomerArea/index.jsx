@@ -1,22 +1,45 @@
-import { Main, ModalContainer, ModalButton, customStyles } from "./style"; // Importe os novos estilos
+import {
+  PageWrapper,
+  BrandSide,
+  BrandLogo,
+  BrandContent,
+  BrandTitle,
+  BrandSub,
+  BrandFeatures,
+  BrandFeatureItem,
+  BrandBack,
+  Divider,
+  FormSide,
+  MobileLogo,
+  FormCard,
+  FormTitle,
+  FormSub,
+  FieldGroup,
+  FieldWrapper,
+  FieldLabel,
+  FieldInput,
+  EyeButton,
+  ErrorText,
+  SubmitButton,
+  MobileBackLink,
+  ModalContainer,
+  ModalButton,
+  customStyles,
+} from "./style";
 import FRB from "../../assets/img/logoBranca.webp";
-import backLogin from "../../assets/img/IconBackPage.webp";
-import { Input } from "../../components/Input";
-import { Button } from "../../components/Button";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { UserContext } from "../../contexts/userContext/userContext";
 import { useForm } from "react-hook-form";
-import { AiFillEye } from "react-icons/ai";
-import { AiFillEyeInvisible } from "react-icons/ai";
-import { useState } from "react";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { schemaLogin } from "../../schemas";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router";
 import Modal from "react-modal";
+import { RhSelectModal } from "../../components/Modals/RhSelectModal";
 
 export const CustomerArea = () => {
   const navigate = useNavigate();
-  const { handleForm, showModal, setShowModal, userInfo } = useContext(UserContext);
+  const { handleForm, showModal, setShowModal, showBenefitsModal, setShowBenefitsModal, showRhModal, setShowRhModal, userInfo, spinner } = useContext(UserContext);
   const [eye, setEye] = useState(true);
 
   const {
@@ -28,109 +51,133 @@ export const CustomerArea = () => {
     resolver: yupResolver(schemaLogin),
   });
 
-  const handleModalClose = () => {
-    setShowModal(false);
-  };
+  const handleModalClose = () => setShowModal(false);
+  const handleFaturamentoClick = () => { navigate("/faturamento"); handleModalClose(); };
+  const handleUserClick = () => { navigate("/user"); handleModalClose(); };
+  const handleBiClick = () => { navigate("/bi"); handleModalClose(); };
 
-  const handleFaturamentoClick = () => {
-    navigate("/faturamento");
-    handleModalClose();
-  };
-
-  const handleUserClick = () => {
-    navigate("/user");
-    handleModalClose();
-  };
+  const handleBenefitsModalClose = () => setShowBenefitsModal(false);
+  const handleGoInclusao = () => { navigate("/beneficios/portal"); handleBenefitsModalClose(); };
+  const handleGoFaturamento = () => { navigate("/beneficios/faturamento"); handleBenefitsModalClose(); };
 
   return (
     <>
-      <Main>
-        <div className="positionIconBack">
-          <img
-            className="imgIconBack"
-            src={backLogin}
-            alt="Icone para Voltar"
-            onClick={() => {
-              navigate("/");
-            }}
-          />
-        </div>
+      <PageWrapper>
+        <BrandSide>
+          <BrandLogo src={FRB} alt="FRB Consultoria" />
 
-        <div className="positionLogo">
-          <img className="imglogo" src={FRB} alt="Logo Da FRB" />
-        </div>
-        <div className="reverse">
-          <div className="positionElipse slideLeft">
-            <div className="positionElipse">
-              <div className="positionElipse">
-                <div className="elipse">
-                  <div className="elipse2">
-                    <div className="elipse3">
-                      <form
-                        onSubmit={handleSubmit(handleForm)}
-                        className="boxLogin "
-                      >
-                        <p className="textLogin">Login</p>
-                        <div className="inputPosition">
-                          <Input
-                            name="username"
-                            type="text"
-                            label="E-mail"
-                            placeholder="Digite seu email"
-                            register={register("username")}
-                            error={errors.username && <p className="error">{errors.username.message}</p>}
-                          />
-                         
-                          <div className="positionEye">
-                            <Input
-                              name="password"
-                              type={eye ? "password" : "text"}
-                              label="Senha"
-                              placeholder="Digite sua senha"
-                              register={register("password")}
-                              error={errors.password && <p className="error">{errors.password.message}</p>}
-                            />
-                            {eye ? (
-                              <AiFillEyeInvisible onClick={()=>{setEye(!eye)}} />
-                              ) : (
-                                <AiFillEye onClick={()=>{setEye(!eye)}} />
-                                )}
-                          </div>
-                           
-                        </div>
+          <BrandContent>
+            <BrandTitle>
+              Portal de <span>Gestão</span> FRB Consultoria
+            </BrandTitle>
+            <BrandSub>
+              Acesse contratos, documentos, faturamento e benefícios dos seus colaboradores em um só lugar.
+            </BrandSub>
+            <BrandFeatures>
+              <BrandFeatureItem>Gestão de planos de saúde, vida e dental</BrandFeatureItem>
+              <BrandFeatureItem>Acompanhamento de faturamento em tempo real</BrandFeatureItem>
+              <BrandFeatureItem>Envio e controle de documentos</BrandFeatureItem>
+              <BrandFeatureItem>Carteirinhas digitais para colaboradores</BrandFeatureItem>
+              <BrandFeatureItem>Visualização de relatórios em Power BI</BrandFeatureItem>
+            </BrandFeatures>
+          </BrandContent>
 
-                        <Button type="submit" name="Entrar"></Button>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="positionDeskText this">
-            <p className="textFooter slideRight">
-              Monitore a performance dos seus contratos
-            </p>
-          </div>
-        </div>
-      </Main>
+          <BrandBack onClick={() => navigate("/")}>
+            ← Voltar para o site
+          </BrandBack>
+        </BrandSide>
 
-      {userInfo.user_level === 'invoicinguser' && (
+        <Divider />
+
+        <FormSide>
+          <MobileLogo src={FRB} alt="FRB Consultoria" />
+
+          <FormCard>
+            <FormTitle>Acessar conta</FormTitle>
+            <FormSub>Entre com suas credenciais para continuar</FormSub>
+
+            <form onSubmit={handleSubmit(handleForm)}>
+              <FieldGroup>
+                <FieldWrapper>
+                  <FieldLabel htmlFor="username">E-mail</FieldLabel>
+                  <FieldInput
+                    id="username"
+                    type="text"
+                    placeholder="seu@email.com.br"
+                    autoComplete="username"
+                    {...register("username")}
+                  />
+                  {errors.username && <ErrorText>{errors.username.message}</ErrorText>}
+                </FieldWrapper>
+
+                <FieldWrapper>
+                  <FieldLabel htmlFor="password">Senha</FieldLabel>
+                  <FieldInput
+                    id="password"
+                    type={eye ? "password" : "text"}
+                    placeholder="Digite sua senha"
+                    autoComplete="current-password"
+                    {...register("password")}
+                  />
+                  <EyeButton type="button" onClick={() => setEye(!eye)} tabIndex={-1}>
+                    {eye ? <AiFillEyeInvisible /> : <AiFillEye />}
+                  </EyeButton>
+                  {errors.password && <ErrorText>{errors.password.message}</ErrorText>}
+                </FieldWrapper>
+              </FieldGroup>
+
+              <SubmitButton type="submit" disabled={!!spinner}>
+                {spinner ? "Entrando..." : "Entrar"}
+              </SubmitButton>
+            </form>
+          </FormCard>
+
+          <MobileBackLink onClick={() => navigate("/")}>
+            ← Voltar para o site
+          </MobileBackLink>
+        </FormSide>
+      </PageWrapper>
+
+      {userInfo?.user_level === "invoicinguser" && (
         <Modal
           isOpen={showModal}
           onRequestClose={handleModalClose}
-          contentLabel="Invoicing and BI Options"
+          contentLabel="Escolha de área"
           ariaHideApp={false}
           style={customStyles}
         >
           <ModalContainer>
             <h2>Escolha uma opção</h2>
             <ModalButton onClick={handleFaturamentoClick}>Ir para o Faturamento</ModalButton>
-{userInfo.power_bi_link.includes("app")?<ModalButton onClick={handleUserClick}>Ir para o Power BI</ModalButton>:""}
-            
+            {userInfo?.power_bi_link?.includes("app") && (
+              <ModalButton onClick={handleUserClick}>Ir para o Power BI</ModalButton>
+            )}
+            {userInfo?.perms?.bi && (
+              <ModalButton onClick={handleBiClick}>Ir para o BI FRB</ModalButton>
+            )}
           </ModalContainer>
         </Modal>
       )}
+
+      {userInfo?.user_level === "benefitsadmin" && (
+        <Modal
+          isOpen={showBenefitsModal}
+          onRequestClose={handleBenefitsModalClose}
+          contentLabel="Área de Benefícios"
+          ariaHideApp={false}
+          style={customStyles}
+        >
+          <ModalContainer>
+            <h2>O que deseja fazer?</h2>
+            <ModalButton onClick={handleGoInclusao}>Central de Beneficiários </ModalButton>
+            <ModalButton onClick={handleGoFaturamento} style={{ background: "rgba(4,173,224,0.15)", borderColor: "#04ADE0" }}>
+              Organização do Faturamento
+            </ModalButton>
+          </ModalContainer>
+        </Modal>
+      )}
+
+      {/* Modal RH agora renderizado na página /user (onde o usuário rh é redirecionado) */}
     </>
   );
 };

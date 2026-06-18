@@ -3,19 +3,10 @@ import { useContext } from "react";
 import { UserContext } from "../../../contexts/userContext/userContext";
 
 export const ModalBackground = ({ children, size }) => {
-  const { setClientModal, ClientModal, setCompanyModal } =
-    useContext(UserContext);
+  const { setClientModal, ClientModal, setCompanyModal } = useContext(UserContext);
 
   return (
-    <ModalBackgroundStyle className="closeModal"
-      // onClick={(e) =>
-      //   e.target.className.includes("closeModal")
-      //     ? ClientModal
-      //       ? setClientModal(false)
-      //       : setCompanyModal(false)
-      //     : null
-      // }
-    >
+    <ModalBackgroundStyle>
       <div className={"modal opacity-2 " + size}>
         <span
           className="close"
@@ -23,7 +14,7 @@ export const ModalBackground = ({ children, size }) => {
             ClientModal ? setClientModal(false) : setCompanyModal(false);
           }}
         >
-          x
+          ×
         </span>
         {children}
       </div>

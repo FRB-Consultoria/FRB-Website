@@ -91,6 +91,28 @@ const BOOLEAN_FIELDS = ["ACTIVE", "NO_HEALTH_CARD", "NO_DENTAL_CARD"];
 // Campos que não devem ser uppercase
 const NO_UPPERCASE_FIELDS = [...DATE_FIELDS, ...DATETIME_FIELDS, ...BOOLEAN_FIELDS, "EMAIL_DO_COLABORADOR"];
 
+// Transforma o valor para cópia conforme regras de negócio:
+// - E-mail (contém @): copia como está
+// - Data e hora (dd/mm/aaaa, hh:mm): copia como está (criado, atualizado, carteirinha salva)
+// - Data pura (dd/mm/aaaa): converte para ddmmaaaa sem separadores
+// - Demais (CPF, conta, agência, banco, nome, etc.): sem pontuação, tudo maiúsculo
+export const sanitizeForCopy = (value) => {
+  if (!value || value === "-") return "";
+  const str = String(value).trim();
+
+  // E-mail — copia como está
+  if (str.includes("@")) return str;
+
+  // Data e hora BR (dd/mm/aaaa, hh:mm...) — copia como está
+  if (/^\d{2}\/\d{2}\/\d{4}[,\s]/.test(str)) return str;
+
+  // Data pura (dd/mm/aaaa) → ddmmaaaa
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(str)) return str.replace(/\//g, "");
+
+  // Tudo mais: remove pontuação/traço/barra/ponto e converte para maiúsculo
+  return str.replace(/[^a-zA-Z0-9\s]/g, "").toUpperCase().trim();
+};
+
 export const formatValueByKey = (key, value) => {
   if (value === null || value === undefined || value === "") return "-";
   if (key === "CPF_TIT" || key === "CPF_DEP") return formatCPF(value);

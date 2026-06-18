@@ -5,13 +5,13 @@ import { UserContext } from "../../../contexts/userContext/userContext";
 import { api } from "../../../services/api";
 import { notifySucess, notifyError } from "../../../Toastfy";
 import { normalizeListItem, mapPerson } from "../utils/benefitsHelpers";
-import { formatCardNumberInput, formatSearchInput, isValidCardNumber, formatDateTimeBR } from "../utils/benefitsFormatters";
+import { formatCardNumberInput, formatSearchInput, isValidCardNumber, formatDateTimeBR, sanitizeForCopy } from "../utils/benefitsFormatters";
 import { useConfirmModal } from "./useConfirmModal";
 
 const ALLOWED_LEVELS = ["benefitsadmin", "admin", "benefitsoperator"];
 
 export const useBenefitsPortal = () => {
-  const { userInfo, navigate, loading } = useContext(UserContext);
+  const { userInfo, navigate, loading, user } = useContext(UserContext);
   const {
     clients,
     benefitsSelectedCompany, setBenefitsSelectedCompany,
@@ -52,11 +52,12 @@ export const useBenefitsPortal = () => {
   const [highlightExclusionId, setHighlightExclusionId] = useState(null);
 
   const pendingHighlightRef = useRef(null);
+  const handleSelectRootRef = useRef(null);
 
   // Guards
   useEffect(() => {
-    if (!loading && userLevel && !ALLOWED_LEVELS.includes(userLevel)) navigate("/");
-  }, [userLevel, loading, navigate]);
+    if (!loading && userLevel && !ALLOWED_LEVELS.includes(userLevel) && !user?.perm_benefits) navigate("/");
+  }, [userLevel, loading, user, navigate]);
 
   useEffect(() => {
     if (!benefitsSelectedCompany) setCompanyModalOpen(true);
@@ -233,6 +234,8 @@ export const useBenefitsPortal = () => {
     setTimeout(() => setHighlightExclusionId(null), 5000);
   }, [benefitsSelectedCompany, getBenefitsExclusions]);
 
+  useEffect(() => { handleSelectRootRef.current = handleSelectRoot; }, [handleSelectRoot]);
+
   useEffect(() => {
     if (!benefitsSelectedCompany || activeTab !== "beneficiaries") return;
     if (!titularList.length) {
@@ -240,8 +243,8 @@ export const useBenefitsPortal = () => {
       return;
     }
     const stillExists = titularList.some((item) => String(item.id) === String(selectedRootId));
-    if (!selectedRootId || !stillExists) handleSelectRoot(titularList[0].id);
-  }, [titularList, selectedRootId, benefitsSelectedCompany, activeTab, handleSelectRoot]);
+    if (!selectedRootId || !stillExists) handleSelectRootRef.current(titularList[0].id);
+  }, [titularList, selectedRootId, benefitsSelectedCompany, activeTab]);
 
   // ── "A cadastrar" — contagem total (titulares + dependentes) e dropdown ──────
   const _calcToRegisterTotal = (results) => {
@@ -282,6 +285,25 @@ export const useBenefitsPortal = () => {
       setToRegisterLoading(false);
     }
   }, [benefitsSelectedCompany, toRegisterOpen]);
+
+  // ── Auto-refresh em tempo real ao receber novos webhooks ─────────────────────
+  const handleNewNotification = useCallback(async () => {
+    if (!benefitsSelectedCompany) return;
+    try {
+      await refreshBenefitsLists(benefitsSelectedCompany);
+      // Se tem um titular selecionado, atualiza a árvore dele também
+      if (selectedRootId) {
+        const payload = await getBenefitBeneficiaryDetail(selectedRootId, benefitsSelectedCompany);
+        if (payload?.detail) {
+          setSelectedTree(payload.detail);
+          hydrateCardDrafts(payload.detail);
+        }
+      }
+      notifySucess("Portal atualizado — novo evento recebido!");
+    } catch (err) {
+      console.error(err);
+    }
+  }, [benefitsSelectedCompany, refreshBenefitsLists, selectedRootId, getBenefitBeneficiaryDetail]);
 
   // ── Actions
   const onConfirmCompany = async () => {
@@ -328,7 +350,7 @@ export const useBenefitsPortal = () => {
 
   const copyToClipboard = async (text, key) => {
     try {
-      await navigator.clipboard.writeText(text === null || text === undefined || text === "" ? "" : String(text));
+      await navigator.clipboard.writeText(sanitizeForCopy(text));
       setCopiedKey(key);
       notifySucess("Informação copiada!");
       setTimeout(() => setCopiedKey((prev) => (prev === key ? "" : prev)), 1500);
@@ -601,6 +623,7 @@ export const useBenefitsPortal = () => {
     handleSendCardEmail, navigateToBeneficiary, navigateToExclusion,
     confirmModal,
     highlightExclusionId,
+    handleNewNotification,
     toRegisterOpen, setToRegisterOpen, toRegisterLoading, toRegisterItems, toRegisterTotal,
     handleOpenToRegister,
     onClearSearch,

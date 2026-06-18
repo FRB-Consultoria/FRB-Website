@@ -59,7 +59,7 @@ const PT_BR_MONTHS_LOWER = PT_BR_MONTHS.map(m => m.toLowerCase());
   const [allowedYears, setAllowedYears] = useState([]);
 
   useEffect(() => {
-    if (user.user_level !== "invoicinguser") navigate("/");
+    if (!user.perm_faturamento) navigate("/");
   }, [user, navigate]);
 
   // 3) Preenche allowedYears no primeiro render
@@ -216,26 +216,29 @@ const PT_BR_MONTHS_LOWER = PT_BR_MONTHS.map(m => m.toLowerCase());
       return;
     }
 
-    setSendingFiles(true);
-
-    const allSubinvoiceIds = Object.keys(uploadedFiles);
-    const allFilePromises = [];
-
     const allSubinvoicesFilled = subinvoices
       .filter((sub) => sub.client_id === user.client_id)
       .every((subinvoice) => uploadedFiles[subinvoice.id]?.length > 0);
 
     if (!allSubinvoicesFilled) {
       notifyError("Todas as faturas devem ser anexadas antes de enviar.");
-      setSendingFiles(false);
       return;
     }
 
-    let isFirstDocument = true;
+    setSendingFiles(true);
 
-    allSubinvoiceIds.forEach((subinvoiceId) => {
-      const files = uploadedFiles[subinvoiceId];
-      files.forEach((file) => {
+    // Monta lista plana de { subinvoiceId, file } para envio sequencial
+    const allItems = [];
+    Object.keys(uploadedFiles).forEach((subinvoiceId) => {
+      uploadedFiles[subinvoiceId].forEach((file) => {
+        allItems.push({ subinvoiceId, file });
+      });
+    });
+
+    try {
+      for (let i = 0; i < allItems.length; i++) {
+        const { subinvoiceId, file } = allItems[i];
+        const isLast = i === allItems.length - 1; // ship=true só no último
         const formData = new FormData();
         formData.append("file", file);
         formData.append("status", "in_progress");
@@ -244,21 +247,14 @@ const PT_BR_MONTHS_LOWER = PT_BR_MONTHS.map(m => m.toLowerCase());
         formData.append("subinvoice_id", subinvoiceId);
         formData.append("month", selectedMonth.month);
         formData.append("year", selectedMonth.year);
-        formData.append("ship", isFirstDocument ? true : false);
-
-        allFilePromises.push(createDocument(formData, "upload"));
-
-        isFirstDocument = false;
-      });
-    });
-
-    try {
-      await Promise.all(allFilePromises);
+        formData.append("ship", isLast);
+        await createDocument(formData, "upload");
+      }
       notifySucess("Todas as faturas foram enviadas com sucesso!");
       setUploadedFiles({});
     } catch (error) {
-      console.error("Erro ao enviar todas as faturas:", error);
-      notifyError("Erro ao enviar todas as faturas.");
+      console.error("Erro ao enviar faturas:", error);
+      notifyError("Erro ao enviar as faturas. Verifique sua conexão e tente novamente.");
     } finally {
       setSendingFiles(false);
     }

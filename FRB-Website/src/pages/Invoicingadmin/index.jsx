@@ -62,7 +62,7 @@ export const Invoicingadmin = () => {
   const [allowedYears, setAllowedYears] = useState([]);
 
   useEffect(() => {
-    if (user.user_level !== "invoicingadmin") navigate("/");
+    if (!user.perm_faturamento_admin) navigate("/");
   }, [user, navigate]);
 
   useEffect(() => {
